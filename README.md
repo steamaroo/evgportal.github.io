@@ -1,2 +1,15 @@
-# evgportal.github.io
-EVG portal for bookings, notices, and other features
+# EVG Portal
+
+Access link : http://evgportal.github.io
+
+## Options
+
+- Booking
+- Enquire
+- Cancel
+
+## To-Do
+
+- Add exclusion rules
+- Add notificationss
+- Unify stylesheets
