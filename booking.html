@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EVG Portal Booking</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    body, input, textarea, button {
+      font-family: 'Roboto', sans-serif;
+      transition: all 0.3s ease;
+    }
+    body {
+      padding-top: 70px;
+      background-color: #fdfdfd;
+    }
+    body.dark-mode {
+      background-color: #121212;
+      color: #f5f5f5;
+    }
+    .dark-mode .navbar {
+      background-color: #1a1a1a !important;
+    }
+    .dark-mode .text-muted {
+      color: #aaaaaa !important;
+    }
+    .dark-mode #preview-message {
+      background-color: #2d2d2d;
+      border-color: #444;
+      color: #f5f5f5;
+    }
+    .dark-mode .form-control,
+    .dark-mode .form-select {
+      background-color: #2d2d2d;
+      border-color: #444;
+      color: #f5f5f5;
+    }
+    .dark-mode .form-label {
+      color: #f5f5f5;
+    }
+    .dark-mode .text-muted {
+      color: #9ca3af !important;
+    }
+    .dark-mode ::placeholder {
+      color: #9ca3af !important;
+    }
+    .dark-mode :-ms-input-placeholder {
+      color: #9ca3af !important;
+    }
+    .dark-mode ::-ms-input-placeholder {
+      color: #9ca3af !important;
+    }
+    .screen {
+      display: none;
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .screen.active {
+      display: block;
+      opacity: 1;
+      position: relative;
+      z-index: 1;
+    }
+    #screen-thankyou {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      min-height: 400px;
+      text-align: center;
+      gap: 2rem;
+      padding: 1rem;
+    }
+    #preview-message {
+      white-space: normal;
+      font-size: 1rem;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    }
+    #preview-message p {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.25rem 0;
+      font-weight: 400;
+    }
+    #preview-message p label {
+      font-weight: 600;
+      color: #007bff;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    #preview-message p span.value {
+      font-weight: 500;
+      text-align: right;
+      flex: 1;
+      word-break: break-word;
+    }
+    .dark-mode #preview-message p label {
+      color: #4dabf7;
+    }
+    .back-btn {
+      margin-top: 1rem;
+    }
+    .mode-toggle {
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0.5rem;
+      margin-left: 1rem;
+      color: white;
+    }
+    .dark-mode .navbar-dark {
+      background-color: #1a1a1a !important;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-medium text-white" href="index.html">🐠 GRG Booking</a>
+      <button class="mode-toggle" id="modeToggle">
+        <span class="material-icons" id="modeIcon">dark_mode</span>
+      </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="booking.html">Book</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="enquire.html">Enquire</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="cancel.html">Cancel</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <main class="container position-relative" style="min-height: 400px;">
+    <div id="alert-container" class="mb-3"></div>
+    <div id="screen-form" class="screen active">
+      <form id="booking-form" novalidate>
+        <div class="mb-4">
+          <label for="date-picker" class="form-label">Select a Date to Book</label>
+          <input type="date" class="form-control" id="date-picker" required />
+        </div>
+        <div id="time-slots" class="mb-3">
+          <p class="text-muted">Select a date to see available time slots.</p>
+        </div>
+        <div class="mb-3">
+          <label for="volunteer-name" class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="volunteer-name" placeholder="Enter your name" required />
+        </div>
+        <div class="mb-3">
+          <label for="comment" class="form-label">Comment (Optional)</label>
+          <textarea class="form-control" id="comment" rows="2" placeholder="Any notes you want to add" maxlength="300"></textarea>
+        </div>
+        <button type="button" id="submit-btn" class="btn btn-success mx-auto d-block">Request Slot</button>
+      </form>
+    </div>
+    <div id="screen-thankyou" class="screen text-center">
+      <p id="previewMessageIntro" class="fs-5 mb-2"></p>
+      <p id="playful-message" class="text-muted fst-italic"></p>
+      <p id="please-wait" class="text-secondary"></p>
+    </div>
+    <div id="screen-whatsapp" class="screen">
+      <p class="text-muted text-center mb-3">This will be sent to WhatsApp:</p>
+      <pre id="preview-message" class="card-text mb-3"></pre>
+      <button id="send-btn" class="btn btn-success w-100">
+        <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
+      </button>
+      <button id="back-btn" class="btn btn-secondary w-100 back-btn">
+        ⬅️ Back to Form
+      </button>
+    </div>
+  </main>
+  <div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const WHATSAPP_PREVIEW_DELAY_MS = 2000;
+      const DAYS_TO_LOOK_AHEAD = 14;
+
+      // Add as many webhook URLs as you want here
+      const WEBHOOK_URLS = [
+        'https://script.google.com/macros/s/AKfycbzTGnWa8CM7bQaWX_yc5NDLGAe4twp3lKAwpei9OTjipqJp-hMYQT750gUSMiUT-6BvyQ/exec', // randomnew backup
+        'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec' // offical log
+      ];
+
+      const timeSlots = [
+        "09:00 - 14:00",
+        "10:00 - 15:00",
+        "11:00 - 16:00",
+        "12:00 - 17:00",
+        "11:00 - 14:00",
+        "12:00 - 15:00"
+      ];
+
+      const screenForm = document.getElementById('screen-form');
+      const screenThankYou = document.getElementById('screen-thankyou');
+      const screenWhatsApp = document.getElementById('screen-whatsapp');
+      const datePicker = document.getElementById('date-picker');
+      const timeSlotsDiv = document.getElementById('time-slots');
+      const volunteerName = document.getElementById('volunteer-name');
+      const commentField = document.getElementById('comment');
+      const submitBtn = document.getElementById('submit-btn');
+      const previewMessageIntro = document.getElementById('previewMessageIntro');
+      const playfulMessage = document.getElementById('playful-message');
+      const previewMessage = document.getElementById('preview-message');
+      const sendBtn = document.getElementById('send-btn');
+      const backBtn = document.getElementById('back-btn');
+      const sentOverlay = document.getElementById('sent-overlay');
+      const alertContainer = document.getElementById('alert-container');
+
+      let selectedDate = null;
+      let selectedTime = null;
+      let currentMessage = null;
+
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + DAYS_TO_LOOK_AHEAD);
+      const maxDateStr = maxDate.toISOString().split('T')[0];
+      datePicker.setAttribute('min', todayStr);
+      datePicker.setAttribute('max', maxDateStr);
+
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        });
+      }
+
+      function showAlert(message) {
+        alertContainer.innerHTML = '';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-primary alert-dismissible fade show';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        alertContainer.appendChild(alertDiv);
+        alertDiv.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => alertDiv.remove(), 5000);
+      }
+
+      function switchScreen(from, to) {
+        from.classList.remove('active');
+        setTimeout(() => {
+          to.classList.add('active');
+        }, 10);
+      }
+
+      datePicker.addEventListener('change', (e) => {
+        selectedDate = e.target.value;
+        selectedTime = null;
+        previewMessage.innerHTML = '';
+        previewMessageIntro.innerHTML = '';
+        playfulMessage.textContent = '';
+        timeSlotsDiv.innerHTML = '';
+        if (selectedDate) {
+          const select = document.createElement('select');
+          select.className = 'form-select';
+          select.innerHTML = '<option value="">Select a time slot</option>' +
+            timeSlots.map(slot => `<option value="${slot}">${slot}</option>`).join('');
+          timeSlotsDiv.appendChild(select);
+          select.addEventListener('change', (e) => {
+            selectedTime = e.target.value;
+          });
+        } else {
+          timeSlotsDiv.innerHTML = '<p class="text-muted">Select a date to see available time slots.</p>';
+        }
+      });
+
+      submitBtn.addEventListener('click', () => {
+        if (!selectedDate) {
+          showAlert("Hold on, what day would you like?<br>The fish need to prepare!");
+          return;
+        }
+        if (!selectedTime) {
+          showAlert("No time selected!<br>Coming in with the morning or afternoon tide?");
+          return;
+        }
+        const name = volunteerName.value.trim();
+        if (!name) {
+          showAlert("Who are you??<br>Don't make the fish guess!");
+          return;
+        }
+        const comment = commentField.value.trim().slice(0, 100);
+        const formattedDate = formatDate(selectedDate);
+        const thankYouMessage = `
+          Thanks <span class="fw-medium">${name}</span>!<br><br>
+          You've selected <span class="fw-medium">${formattedDate}</span> from <span class="fw-medium">${selectedTime}</span>.
+        `;
+        const funMessages = [
+          "🐟 Surgeonfish refining your message...",
+          "🧜‍♀️ Mermaids proofreading your request...",
+          "🐡 Pufferfish inflating your form...",
+          "🦀 Crabs double-checking everything...",
+          "🐙 Octopus counting arms...",
+          "🐬 Dolphins capturing your booking...",
+          "🐢 Turtle slowly processing...",
+          "🧽 Sponges soaking up typos...",
+          "🦑 Squids rewriting in ink...",
+          "🐟 Parrotfish repeating your message...",
+          "📡 Sending request to system...",
+          "🧭 Verifying all info...",
+          "🛠️ Processing your submission...",
+          "📋 Reviewing your submission...",
+          "⏳ Finalizing your request...",
+          "🧾 Validating your selection...",
+          "📦 Packaging everything up...",
+          "🌊 Tide carrying your message...",
+          "🐚 Seashells echoing softly...",
+          "🌤️ Drifting through the breeze...",
+          "🐠 Gliding toward confirmation...",
+          "🕊️ Floating into our system...",
+          "🌙 Request floating on gentle waves...",
+          "🍃 Request moving with ease...",
+          "🐳 Calm waters are prevailing..."
+        ];
+        const randomPlayful = funMessages[Math.floor(Math.random() * funMessages.length)];
+        previewMessageIntro.innerHTML = thankYouMessage;
+
+        function typeWriter(element, text, speed = 50, callback) {
+          let i = 0;
+          element.textContent = '';
+          function type() {
+            if (i < text.length) {
+              element.textContent += text.charAt(i);
+              i++;
+              setTimeout(type, speed);
+            } else if (callback) {
+              callback();
+            }
+          }
+          type();
+        }
+        typeWriter(playfulMessage, randomPlayful, 10, () => {
+          document.getElementById('please-wait').textContent = "Please wait while we prepare the message...";
+        });
+
+        currentMessage = `📣 *GRG Booking Request – ${formattedDate} - ${name}*\n\n` +
+                        `🙋‍♂️ *Name:* ${name}\n` +
+                        `📅️ *Date:* ${formattedDate}\n` +
+                        `🕰️ *Time:* ${selectedTime}`;
+        if (comment) {
+          currentMessage += `\n📝 *Comment:* ${comment}`;
+        }
+
+        switchScreen(screenForm, screenThankYou);
+        setTimeout(() => {
+          previewMessage.innerHTML = '';
+          const details = [
+            { label: 'Name:', value: name },
+            { label: 'Date:', value: formattedDate },
+            { label: 'Time:', value: selectedTime }
+          ];
+          if (comment) {
+            details.push({ label: 'Comment:', value: comment });
+          }
+          details.forEach(({ label, value }) => {
+            previewMessage.innerHTML += `
+              <p>
+                <label>${label}</label>
+                <span class="value">${value}</span>
+              </p>
+            `;
+          });
+          switchScreen(screenThankYou, screenWhatsApp);
+        }, WHATSAPP_PREVIEW_DELAY_MS + 600);
+      });
+
+      function sendToSheets(webhookData) {
+        WEBHOOK_URLS.forEach(url => {
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookData),
+            mode: 'no-cors'
+          })
+          .then(() => console.log(`Sent to ${url}`))
+          .catch(err => console.error(`Error sending to ${url}:`, err));
+        });
+      }
+
+      sendBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (!currentMessage) return;
+
+        const name = volunteerName.value.trim();
+        const formattedDate = formatDate(selectedDate);
+        const time = selectedTime;
+        const comment = commentField.value.trim();
+        const userAgent = navigator.userAgent || 'Unknown';
+        const screenResolution = `${window.screen.width}x${window.screen.height}`;
+
+        const webhookData = {
+          token: 'just_to_stop_bots',
+          date: formattedDate,
+          time: time,
+          name: name,
+          comment: comment,
+          userAgent: userAgent,
+          screenResolution: screenResolution
+        };
+
+        console.log('Sending webhook data:', webhookData);
+
+        // Send to both Sheets
+        sendToSheets(webhookData);
+
+        const encodedMessage = encodeURIComponent(currentMessage);
+        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+        switchScreen(screenWhatsApp, screenForm);
+        sentOverlay.style.display = 'block';
+        setTimeout(() => { sentOverlay.style.display = 'none'; }, 2000);
+      });
+
+      backBtn.addEventListener('click', () => {
+        switchScreen(screenWhatsApp, screenForm);
+      });
+
+      const modeToggle = document.getElementById('modeToggle');
+      const modeIcon = document.getElementById('modeIcon');
+      const body = document.body;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedMode = localStorage.getItem('darkMode');
+      if (savedMode === 'dark' || (!savedMode && prefersDark)) {
+        enableDarkMode();
+      }
+      modeToggle.addEventListener('click', function() {
+        if (body.classList.contains('dark-mode')) {
+          disableDarkMode();
+        } else {
+          enableDarkMode();
+        }
+      });
+      function enableDarkMode() {
+        body.classList.add('dark-mode');
+        modeIcon.textContent = 'light_mode';
+        localStorage.setItem('darkMode', 'dark');
+      }
+      function disableDarkMode() {
+        body.classList.remove('dark-mode');
+        modeIcon.textContent = 'dark_mode';
+        localStorage.setItem('darkMode', 'light');
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
