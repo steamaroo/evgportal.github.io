@@ -1,20 +1,17 @@
-Date,Time,School,Grade,TypeDetail,Number of Learners,Facilitator,No. of Guides still needed,Guides Booked
-23-Sep-25,9:00,Hillcrest High School,11,Course Population Studies,116,"Nomfundo, Kathy",3,"Andrée, Happy, Michelle, Sabathile, Caroline, Gladness, Joanne, Dina"
-25-Sep-25,9:00,St Patricks College,6,Guiding,18,,0,"Tiny, Pam"
-26-Sep-25,10:00,Grantleigh High School,11,Course Population Studies,34,Nomfundo,1,"Andrée, Gladness"
-29-Sep-25,9:00,Lyndhurst Primary,2,Guiding,110,,11,
-30-Sep-25,9:00,Athloton Primary,2,Guiding,85,,6,"Tiny, Kwanda"
-1-Oct-25,8:30,Star College Durban,10,Guiding,45,,5,
-1-Oct-25,9:00,Anjuman Islam Primary,4,Course Animals and Ecosystems,74,Sabathile,7,
-2-Oct-25,9:00,Kloof High School,11,Course Population Studies,60,Nomfundo,6,
-15-Oct-25,9:00,Umhlali Prep,3,Guiding,145,,15,
-16-Oct-25,9:00,Dundee Junior School,5,Guiding,50,,5,
-16-Oct-25,9:00,Ondendaal Hoerskool,10-12,Guiding Population Ecology,110,,11,
-21-Oct-25,9:00,Berea Primary School,3,Course Ocean Connection,76,Sabathile,8,
-22-Oct-25,9:00,Maris Stella School,10,Course Marine Ecology,45,Nomfundo,5,
-23-Oct-25,9:00,Dundee Junior School,5,Guiding,50,,5,
-23-Oct-25,9:00,Michaelhouse,11,Course Population Studies,31,Nomfundo,3,
-24-Oct-25,9:00,Longmarket Girls School,2,Guiding,82,,8,
-28-Oct-25,9:00,Morningside Primary,4,Course Form and Function,84,Sabathile,8,
-30-Oct-25,8:30,Our Lady of Fatima Dominican Convent School,1,Course Ocean Connection,34,Sabathile,3,
-31-Oct-25,8:30,Crawford International North Coast,5,Course Biodiversity & Classification,46,Nomfundo,5,
+Date,Time,School,Grade,TypeDetail,Number of Learners,Facilitator,No. of Guides still needed,Guides Booked,Shadowing
+29-Sep-25,09:00,Lyndhurst Primary,2,Guiding,110,,3,"Adri, Gladness, Caroline, Aveen, Joanne, Dina, Pat, Charmaine","Bronwyn, Ana, Dristi, Danny, Mieke, Sthembiso, Nonzuzo, Pam C"
+30-Sep-25,09:00,Athloton Primary,2,Guiding,85,,5,"Tiny, Kwanda, Dina","Zama S, Dristi, Danny, Mieke"
+01-Oct-25,08:30,Star College Durban,10,Guiding,45,,4,,"Avishka, Bronwyn"
+01-Oct-25,09:00,Anjuman Islam Primary,4,Course Animals and Ecosystems,74,Sabathile,5,"Gladness, KK","Audrey, Zama S, Dristi, Mieke, Sthembiso, Nonzuzo"
+02-Oct-25,09:00,Kloof High School,11,Course Population Studies,60,Nomfundo,4,"Nan, Andrée","Sthembiso, Nonzuzo"
+15-Oct-25,09:00,Umhlali Prep,3,Guiding,145,,13,"Adri, Tiny","Audrey, ZamaS, Avishka, Nonzuzo"
+16-Oct-25,09:00,Dundee Junior School,5,Guiding,50,,5,,
+16-Oct-25,09:00,Ondendaal Hoerskool,10-12,Guiding Population Ecology,110,,10,Andrée,
+21-Oct-25,09:00,Berea Primary School,3,Course Ocean Connection,76,Sabathile,6,"Gladness, Adri","Audrey, Bronwyn, Drisit, Sthembiso, Pam C"
+22-Oct-25,09:00,Maris Stella School,10,Course Marine Ecology,45,Nomfundo,4,Caroline,"Audrey, Zama S, Avishka, Bronwyn, Nonzuzo, Pam C"
+23-Oct-25,09:00,Dundee Junior School,5,Guiding,50,,5,Tiny,
+23-Oct-25,09:00,Michaelhouse,11,Course Population Studies,31,Nomfundo,3,,
+24-Oct-25,09:00,Longmarket Girls School,2,Guiding,82,,8,,"Avishka, Sthembiso"
+28-Oct-25,09:00,Morningside Primary,4,Course Form and Function,84,Sabathile,6,"Adri, Gladness","Bronwyn, Sthembiso, Pam C"
+30-Oct-25,08:30,Our Lady of Fatima Dominican Convent School,1,Course Ocean Connection,34,Sabathile,2,Gladness,
+31-Oct-25,08:30,Crawford International North Coast,5,Course Biodiversity & Classification,46,Nomfundo,3,"Andrée, Adri","Audrey, Avishka, Nonzuzo"
