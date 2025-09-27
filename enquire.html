@@ -4,35 +4,43 @@
   <!-- Basic Meta Tags -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EVG Portal Enquiry</title>
+  <title>Aquarium Volunteer Enquiry</title>
 
   <!-- External Resources -->
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-  <!-- Material Icons for Dark Mode Toggle -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
   <style>
-    /* Base styling for all elements */
     body, input, textarea, button {
       font-family: 'Roboto', sans-serif;
-      transition: all 0.3s ease; /* Smooth transitions for dark mode */
+      transition: all 0.3s ease;
     }
 
     body {
-      padding-top: 70px; /* offset for fixed navbar */
-      background-color: #fdfdfd; /* Light mode background */
+      padding-top: 70px;
+      background-color: #fdfdfd;
     }
 
-    /* Dark mode styles */
     body.dark-mode {
       background-color: #121212;
       color: #f5f5f5;
     }
+
+    .fade-slide {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.6s ease forwards;
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
 
     .dark-mode .navbar-dark {
       background-color: #1a1a1a !important;
@@ -64,7 +72,6 @@
       background-color: #333;
     }
 
-    /* Screen transition styling */
     .screen {
       display: none;
       opacity: 0;
@@ -82,7 +89,6 @@
       z-index: 1;
     }
 
-    /* Message preview styling */
     #preview-message {
       white-space: normal;
       font-size: 1rem;
@@ -116,7 +122,6 @@
       word-break: break-word;
     }
 
-    /* Date entry styling */
     .date-entry {
       background: #f8f9fa;
       border: 1px solid #ddd;
@@ -128,34 +133,22 @@
       align-items: center;
     }
 
-    /* Dark mode adjustments for preview message */
     .dark-mode #preview-message p label {
       color: #4dabf7;
     }
 
     .dark-mode .text-muted {
-      color: #9ca3af !important; /* A lighter gray for dark mode */
+      color: #9ca3af !important;
     }
 
-    /* If you're using actual placeholder attributes, add this: */
     .dark-mode ::placeholder {
       color: #9ca3af !important;
     }
 
-    .dark-mode :-ms-input-placeholder {
-      color: #9ca3af !important;
-    }
-
-    .dark-mode ::-ms-input-placeholder {
-      color: #9ca3af !important;
-    }
-
-    /* Back button styling */
     .back-btn {
       margin-top: 1rem;
     }
 
-    /* Thank you screen styling */
     #screen-thankyou {
       display: flex;
       flex-direction: column;
@@ -167,333 +160,271 @@
       padding: 1rem;
     }
 
-    /* Dark mode toggle button */
     .mode-toggle {
       cursor: pointer;
       border: none;
       background: none;
       padding: 0.5rem;
       margin-left: 1rem;
-      color: white;
+      color: #000;
     }
 
-    /* Navbar dark mode adjustments */
-    .dark-mode .navbar-dark {
-      background-color: #1a1a1a !important;
+    .dark-mode .mode-toggle {
+      color: #FFF;
+    }
+
+    .mode-toggle .material-icons {
+      transition: transform 0.3s ease;
+    }
+
+    body.dark-mode .mode-toggle .material-icons {
+      transform: rotate(180deg);
     }
   </style>
 </head>
 <body>
 
-<!-- Main Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top shadow-sm">
-  <div class="container">
-    <!-- Brand/logo linking to home -->
-    <a class="navbar-brand fw-medium text-white" href="index.html">🐠 GRG Enquiry</a>
+  <!-- Navbar placeholder -->
+  <div id="navbar-placeholder"></div>
 
-    <!-- Dark mode toggle button -->
-    <button class="mode-toggle" id="modeToggle">
-      <span class="material-icons" id="modeIcon">dark_mode</span>
-    </button>
+  <main class="container position-relative" style="min-height: 400px;">
 
-    <!-- Mobile menu toggle button -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div id="alert-container" class="mb-3"></div>
 
-    <!-- Navigation links -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="booking.html">Book</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active text-white" href="enquire.html">Enquire</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="cancel.html">Cancel</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- Main Content Container -->
-<main class="container position-relative" style="min-height: 400px;">
-  <!-- Alert container for validation messages -->
-  <div id="alert-container" class="mb-3"></div>
-
-  <!-- Form Screen (initial active screen) -->
-  <div id="screen-form" class="screen active">
-    <form id="enquiry-form" novalidate>
-      <!-- Date selection section -->
-      <div class="mb-4">
-        <label for="enquire-date" class="form-label">Which Dates Are You Curious About?</label>
-        <div class="input-group mb-2">
+    <!-- Form Screen -->
+    <div id="screen-form" class="screen active">
+      <h1 class="display-5 mb-2 text-center fade-slide">GRG Enquiry</h1>
+      <p class="lead text-center text-muted mb-4 fade-slide">Select a day(s) to enquire about</p>
+      <form id="enquiry-form" novalidate>
+        <!-- Date selection -->
+        <div class="mb-4 fade-slide">
+          <label for="enquire-date" class="form-label">Select a day(s)</label>
           <input type="date" class="form-control" id="enquire-date" />
-          <button class="btn btn-outline-secondary" type="button" id="add-date-btn">
-            <i class="fas fa-plus"></i>
-          </button>
+          <div id="selected-dates" class="mt-2"></div>
         </div>
-        <div id="selected-dates"></div>
-      </div>
 
-      <!-- Name input -->
-      <div class="mb-4">
-        <label for="enquire-name" class="form-label">Your Name</label>
-        <input type="text" class="form-control" id="enquire-name" placeholder="Enter your name" required />
-      </div>
+        <div class="mb-4 fade-slide">
+          <label for="enquire-name" class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="enquire-name" placeholder="Enter your name" required />
+        </div>
 
-      <!-- Message input -->
-      <div class="mb-4">
-        <label for="enquire-message" class="form-label">Your Question or Message</label>
-        <textarea class="form-control" id="enquire-message" rows="2" placeholder="Type your query here" maxlength="300" required></textarea>
-      </div>
+        <div class="mb-4 fade-slide">
+          <label for="enquire-message" class="form-label">Your Question or Message</label>
+          <textarea class="form-control" id="enquire-message" rows="2" placeholder="Type your query here" maxlength="300" required></textarea>
+        </div>
 
-      <!-- Submit button -->
-      <button type="button" id="submit-btn" class="btn btn-warning mx-auto d-block">Send Enquiry</button>
-    </form>
-  </div>
+        <button type="button" id="submit-btn" class="btn btn-warning mx-auto d-block fade-slide">Send Enquiry</button>
+      </form>
+    </div>
 
-  <!-- Thank You Screen -->
-  <div id="screen-thankyou" class="screen text-center d-flex flex-column justify-content-center align-items-center" style="min-height: 400px; gap: 2rem; padding: 1rem;">
-    <p id="previewMessageIntro" class="fs-5 mb-2"></p>
-    <p id="please-wait" class="text-secondary"></p>
-  </div>
+    <!-- Thank You Screen -->
+    <div id="screen-thankyou" class="screen text-center d-flex flex-column justify-content-center align-items-center" style="min-height: 400px; gap: 2rem; padding: 1rem;">
+      <p id="previewMessageIntro" class="fs-5 mb-2"></p>
+      <p id="please-wait" class="text-secondary"></p>
+    </div>
 
-  <!-- WhatsApp Preview Screen -->
-  <div id="screen-whatsapp" class="screen">
-    <p class="text-muted text-center mb-3">This will be sent via WhatsApp:</p>
-    <pre id="preview-message" class="card-text mb-3"></pre>
-    <button id="send-btn" class="btn btn-success w-100">
-      <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
-    </button>
-    <button id="back-btn" class="btn btn-secondary w-100 back-btn">
-      ⬅️ Back to Form
-    </button>
-  </div>
-</main>
+    <!-- WhatsApp Preview -->
+    <div id="screen-whatsapp" class="screen">
+      <p class="text-muted text-center mb-3">This will be sent via WhatsApp:</p>
+      <pre id="preview-message" class="card-text mb-3"></pre>
+      <button id="send-btn" class="btn btn-success w-100">
+        <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
+      </button>
+      <button id="back-btn" class="btn btn-primary w-100 back-btn">
+        ⬅️ Back to Form
+      </button>
+    </div>
+  </main>
 
-<!-- Success message overlay -->
-<div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
+  <div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
 
-<!-- Main JavaScript -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Configuration
-  const WHATSAPP_PREVIEW_DELAY_MS = 2000;
-  const DAYS_TO_LOOK_AHEAD = 60;
+  <script>
+    // --- Load Navbar Dynamically ---
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        const navPlaceholder = document.createElement('div');
+        navPlaceholder.id = 'navbar-placeholder';
+        document.body.insertBefore(navPlaceholder, document.body.firstChild);
+        navPlaceholder.innerHTML = html;
 
-  // DOM Elements
-  const screenForm = document.getElementById('screen-form');
-  const screenThankYou = document.getElementById('screen-thankyou');
-  const screenWhatsApp = document.getElementById('screen-whatsapp');
-  const alertContainer = document.getElementById('alert-container');
-  const nameInput = document.getElementById('enquire-name');
-  const dateInput = document.getElementById('enquire-date');
-  const addDateBtn = document.getElementById('add-date-btn');
-  const selectedDatesDiv = document.getElementById('selected-dates');
-  const messageInput = document.getElementById('enquire-message');
-  const submitBtn = document.getElementById('submit-btn');
-  const previewMessage = document.getElementById('preview-message');
-  const sendBtn = document.getElementById('send-btn');
-  const backBtn = document.getElementById('back-btn');
-  const sentOverlay = document.getElementById('sent-overlay');
+        const path = window.location.pathname.split("/").pop();
+        document.querySelectorAll("#navbar-placeholder .nav-link").forEach(link => {
+          if (link.getAttribute("href") === path) link.classList.add("active");
+          else link.classList.remove("active");
+        });
 
-  // State variables
-  let selectedDates = [];
-  let currentMessage = null;
+        const modeToggle = document.getElementById('modeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        const body = document.body;
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  // Set date picker constraints
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
-  const maxDate = new Date();
-  maxDate.setDate(today.getDate() + DAYS_TO_LOOK_AHEAD);
-  dateInput.setAttribute("min", todayStr);
-  dateInput.setAttribute("max", maxDate.toISOString().split("T")[0]);
+        if (savedMode === 'dark' || (!savedMode && prefersDark)) enableDarkMode();
 
-  // Format date for display
-  function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
-  }
+        modeToggle.addEventListener('click', () => {
+          if (body.classList.contains('dark-mode')) disableDarkMode();
+          else enableDarkMode();
+        });
 
-  // Render selected dates
-  function renderDates() {
-    selectedDatesDiv.innerHTML = '';
-    selectedDates.forEach((date, index) => {
-      const div = document.createElement('div');
-      div.className = 'date-entry';
-      div.innerHTML = `
-        <span>${formatDate(date)}</span>
-        <button class="btn btn-sm btn-outline-danger" type="button" onclick="removeDate(${index})">
-          <i class="fas fa-times"></i>
-        </button>
-      `;
-      selectedDatesDiv.appendChild(div);
-    });
-  }
+        function enableDarkMode() {
+          body.classList.add('dark-mode');
+          modeIcon.textContent = 'light_mode';
+          localStorage.setItem('darkMode', 'dark');
+        }
 
-  // Global function to remove dates
-  window.removeDate = function(index) {
-    selectedDates.splice(index, 1);
-    renderDates();
-  };
-
-  // Show alert message
-  function showAlert(message) {
-    alertContainer.innerHTML = '';
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-warning alert-dismissible fade show';
-    alertDiv.innerHTML = `
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    alertContainer.appendChild(alertDiv);
-    alertDiv.scrollIntoView({ behavior: 'smooth' });
-
-    setTimeout(() => alertDiv.remove(), 5000);
-  }
-
-  // Switch between screens
-  function switchScreen(from, to) {
-    from.classList.remove('active');
-    setTimeout(() => to.classList.add('active'), 10);
-  }
-
-  // Add date button handler
-  addDateBtn.addEventListener('click', () => {
-    const date = dateInput.value;
-    if (!date || selectedDates.includes(date)) return;
-    selectedDates.push(date);
-    renderDates();
-    dateInput.value = '';
-  });
-
-  // Submit button handler
-  submitBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    const message = messageInput.value.trim();
-
-    // Validation
-    if (!name) {
-      showAlert("Please enter your name.");
-      return;
-    }
-
-    if (selectedDates.length === 0) {
-      showAlert("Please add at least one date.");
-      return;
-    }
-
-    if (!message) {
-      showAlert("Please include a query.");
-      return;
-    }
-
-    const formattedDates = selectedDates.map(formatDate).join(", ");
-
-    // Construct WhatsApp message
-    currentMessage = `❓ *GRG Enquiry - ${name}*\n\n` +
-                    `🙋‍♂️ *Name:* ${name}\n` +
-                    `📅 *Dates:* ${formattedDates}\n` +
-                    `📝 *Message:* ${message}`;
-
-    // Thank you message
-    const thankYouMessage = `
-      Thanks <span class="fw-medium">${name}</span>!<br><br>
-      You're asking about the following date(s) <span class="fw-medium">${formattedDates}</span>.
-    `;
-
-    document.getElementById('previewMessageIntro').innerHTML = thankYouMessage;
-    document.getElementById('please-wait').textContent = "Please wait while we prepare the message...";
-
-    switchScreen(screenForm, screenThankYou);
-
-    // Show WhatsApp preview after delay
-    setTimeout(() => {
-      previewMessage.innerHTML = ''; // clear preview
-
-      const details = [
-        { label: 'Name:', value: name },
-        { label: 'Dates:', value: formattedDates },
-        { label: 'Message:', value: message }
-      ];
-
-      // Build preview message
-      details.forEach(({ label, value }) => {
-        previewMessage.innerHTML += `
-          <p>
-            <label>${label}</label>
-            <span class="value">${value}</span>
-          </p>
-        `;
+        function disableDarkMode() {
+          body.classList.remove('dark-mode');
+          modeIcon.textContent = 'dark_mode';
+          localStorage.setItem('darkMode', 'light');
+        }
       });
 
-      switchScreen(screenThankYou, screenWhatsApp);
-    }, WHATSAPP_PREVIEW_DELAY_MS);
-  });
+    // --- Enquiry Form Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const WHATSAPP_PREVIEW_DELAY_MS = 2000;
+      const DAYS_TO_LOOK_AHEAD = 60;
 
-  // WhatsApp send button handler
-  sendBtn.addEventListener('click', () => {
-    if (!currentMessage) return;
-    const encodedMessage = encodeURIComponent(currentMessage);
-    window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, "_blank");
+      // Stagger fade-slide elements
+      document.querySelectorAll(".fade-slide").forEach((el, idx) => {
+        el.style.animationDelay = `${idx * 0.1}s`;
+      });
 
-    switchScreen(screenWhatsApp, screenForm);
-    sentOverlay.style.display = "block";
-    setTimeout(() => sentOverlay.style.display = "none", 2000);
-  });
 
-  // Back button handler
-  backBtn.addEventListener('click', () => {
-    switchScreen(screenWhatsApp, screenForm);
-  });
+      const screenForm = document.getElementById('screen-form');
+      const screenThankYou = document.getElementById('screen-thankyou');
+      const screenWhatsApp = document.getElementById('screen-whatsapp');
+      const alertContainer = document.getElementById('alert-container');
+      const nameInput = document.getElementById('enquire-name');
+      const dateInput = document.getElementById('enquire-date');
+      const selectedDatesDiv = document.getElementById('selected-dates');
+      const messageInput = document.getElementById('enquire-message');
+      const submitBtn = document.getElementById('submit-btn');
+      const previewMessage = document.getElementById('preview-message');
+      const sendBtn = document.getElementById('send-btn');
+      const backBtn = document.getElementById('back-btn');
+      const sentOverlay = document.getElementById('sent-overlay');
 
-  // Dark Mode Toggle Functionality
-  const modeToggle = document.getElementById('modeToggle');
-  const modeIcon = document.getElementById('modeIcon');
-  const body = document.body;
+      let selectedDates = [];
+      let currentMessage = null;
 
-  // Check for saved user preference or use system preference
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const savedMode = localStorage.getItem('darkMode');
+      // Date picker constraints
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0];
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + DAYS_TO_LOOK_AHEAD);
+      dateInput.setAttribute("min", todayStr);
+      dateInput.setAttribute("max", maxDate.toISOString().split("T")[0]);
 
-  // Set initial mode
-  if (savedMode === 'dark' || (!savedMode && prefersDark)) {
-    enableDarkMode();
-  }
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
 
-  // Toggle dark/light mode
-  modeToggle.addEventListener('click', function() {
-    if (body.classList.contains('dark-mode')) {
-      disableDarkMode();
-    } else {
-      enableDarkMode();
-    }
-  });
+      function renderDates() {
+        selectedDatesDiv.innerHTML = '';
+        selectedDates.forEach((date, index) => {
+          const div = document.createElement('div');
+          div.className = 'date-entry';
+          div.innerHTML = `
+            <span>${formatDate(date)}</span>
+            <button class="btn btn-sm btn-outline-danger" type="button" onclick="removeDate(${index})">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          selectedDatesDiv.appendChild(div);
+        });
+      }
 
-  function enableDarkMode() {
-    body.classList.add('dark-mode');
-    modeIcon.textContent = 'light_mode';
-    localStorage.setItem('darkMode', 'dark');
-  }
+      window.removeDate = function(index) {
+        selectedDates.splice(index, 1);
+        renderDates();
+      };
 
-  function disableDarkMode() {
-    body.classList.remove('dark-mode');
-    modeIcon.textContent = 'dark_mode';
-    localStorage.setItem('darkMode', 'light');
-  }
-});
-</script>
+      function showAlert(message) {
+        alertContainer.innerHTML = '';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-warning alert-dismissible fade show';
+        alertDiv.innerHTML = `
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        alertContainer.appendChild(alertDiv);
+        alertDiv.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => alertDiv.remove(), 5000);
+      }
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      function switchScreen(from, to) {
+        from.classList.remove('active');
+        setTimeout(() => to.classList.add('active'), 10);
+      }
+
+      // Auto-add date when selected
+      dateInput.addEventListener('change', () => {
+        const date = dateInput.value;
+        if (!date || selectedDates.includes(date)) return;
+        selectedDates.push(date);
+        renderDates();
+        dateInput.value = ''; // reset after adding
+      });
+
+      submitBtn.addEventListener('click', () => {
+        const name = nameInput.value.trim();
+        const message = messageInput.value.trim();
+
+        if (!name) return showAlert("Please enter your name.");
+        if (selectedDates.length === 0) return showAlert("Please add at least one date.");
+        if (!message) return showAlert("Please include a query.");
+
+        const formattedDates = selectedDates.map(formatDate).join(", ");
+
+        currentMessage = `❓ *GRG Enquiry - ${name}*\n\n` +
+                         `🙋‍♂️ *Name:* ${name}\n` +
+                         `📅 *Dates:* ${formattedDates}\n` +
+                         `📝 *Message:* ${message}`;
+
+        document.getElementById('previewMessageIntro').innerHTML = `
+          Thanks <span class="fw-medium">${name}</span>!<br><br>
+          You're asking about the following date(s) <span class="fw-medium">${formattedDates}</span>.
+        `;
+        document.getElementById('please-wait').textContent = "Please wait while we prepare the message...";
+
+        switchScreen(screenForm, screenThankYou);
+
+        setTimeout(() => {
+          previewMessage.innerHTML = '';
+          const details = [
+            { label: 'Name:', value: name },
+            { label: 'Dates:', value: formattedDates },
+            { label: 'Message:', value: message }
+          ];
+          details.forEach(({ label, value }) => {
+            previewMessage.innerHTML += `
+              <p><label>${label}</label><span class="value">${value}</span></p>
+            `;
+          });
+          switchScreen(screenThankYou, screenWhatsApp);
+        }, WHATSAPP_PREVIEW_DELAY_MS);
+      });
+
+      sendBtn.addEventListener('click', () => {
+        if (!currentMessage) return;
+        const encodedMessage = encodeURIComponent(currentMessage);
+        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, "_blank");
+        switchScreen(screenWhatsApp, screenForm);
+        sentOverlay.style.display = "block";
+        setTimeout(() => sentOverlay.style.display = "none", 2000);
+      });
+
+      backBtn.addEventListener('click', () => switchScreen(screenWhatsApp, screenForm));
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
