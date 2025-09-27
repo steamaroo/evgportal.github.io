@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EVG Portal - Courses</title>
+
+  <!-- External Resources -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<!--  the dark mode switch applied before css read, bit buggy-->
+<!--  <script>-->
+<!--    (function() {-->
+<!--      try {-->
+<!--        const savedMode = localStorage.getItem('darkMode');-->
+<!--        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;-->
+<!--        if (savedMode === 'dark' || (!savedMode && prefersDark)) {-->
+<!--          document.documentElement.classList.add('dark-mode');-->
+<!--        }-->
+<!--      } catch(e) {}-->
+<!--    })();-->
+<!--  </script>-->
+
+  <style>
+    :root {
+      --course-highlight: rgba(0, 123, 255, 0.1);
+      --guiding-highlight: rgba(255, 255, 0, 0.1);
+      --course-highlight-dark: rgba(0, 123, 255, 0.05);
+      --guiding-highlight-dark: rgba(255, 255, 0, 0.05);
+    }
+
+    body, input, textarea, button {
+      font-family: 'Roboto', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      background-color: #fdfdfd;
+      padding-top: 70px;
+      color: #000;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: #f5f5f5;
+    }
+
+    .dark-mode .navbar { background-color: #1a1a1a !important; }
+<!--    .dark-mode .text-muted { color: #9ca3af !important; }-->
+    .dark-mode .text-muted { color: #f5f5f5 !important; }
+    .dark-mode .list-group-item { background-color: #2d2d2d; border-color: #444; color: #f5f5f5; }
+    .dark-mode .event-selected { background-color: #00ff0033 !important; }
+
+    .dark-mode .form-control,
+    .dark-mode .form-select { background-color: #2d2d2d; border-color: #444; color: #f5f5f5; }
+    .dark-mode .form-label { color: #f5f5f5; }
+
+    .dark-mode ::placeholder { color: #9ca3af !important; }
+
+    .screen { display: none; opacity: 0; position: absolute; width: 100%; top: 0; left: 0; z-index: 0; transition: opacity 0.3s ease; }
+    .screen.active { display: block; opacity: 1; position: relative; z-index: 1; }
+
+    .list-group-item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      padding: 16px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .fade-slide {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.6s ease forwards;
+    }
+
+    /* Animate course/guiding cards in */
+    .list-group-item {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.6s ease forwards;
+    }
+
+    /* Reuse same keyframes as homepage */
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .list-group-item:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .list-group-item.bar-course { background-color: var(--course-highlight); border-left: 6px solid #007bff; }
+    .dark-mode .list-group-item.bar-course { background-color: var(--course-highlight-dark); border-left: 6px solid #007bff; }
+    .list-group-item.bar-guiding { background-color: var(--guiding-highlight); border-left: 6px solid #ffff00; }
+    .dark-mode .list-group-item.bar-guiding { background-color: var(--guiding-highlight-dark); border-left: 6px solid #ffff00; }
+    .list-group-item.bar-other { border-left: 6px solid #6c757d; }
+    .event-selected { background-color: #00ff00aa !important; border-color: #28a745 !important; }
+
+    .list-group-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .checkmark { font-size: 1.4rem; color: #28a745; display: none; }
+    .event-selected .checkmark { display: inline-flex; }
+    .details-btn { margin-top: 10px; }
+
+
+    /* Drawer animation fix (auto height) */
+    .drawer {
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: height 0.4s ease, opacity 0.4s ease;
+      transition: height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
+      margin-top: 0; /* default closed state */
+    }
+    .drawer.open {
+      opacity: 1;
+      margin-top: 1rem; /* Only when drawer is expanded */
+    }
+
+    #whatsapp-msg, #preview-message {
+      background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.3s ease;
+    }
+    .dark-mode #whatsapp-msg, .dark-mode #preview-message { background-color: #2d2d2d; border-color: #444; color: #f5f5f5; }
+
+    #preview-message p { display: flex; justify-content: space-between; margin: 0.25rem 0; font-weight: 400; }
+    #preview-message p label { font-weight: 600; color: #007bff; margin-right: 1rem; flex-shrink: 0; }
+    #preview-message p span.value { font-weight: 500; text-align: right; flex: 1; word-break: break-word; }
+    .dark-mode #preview-message p label { color: #4dabf7; }
+
+    .traffic-btn { font-size: 1.25rem; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; width: 100%; max-width: 350px; margin: 0 auto; display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; transition: all 0.2s ease-in-out; text-decoration: none; color: white; cursor: pointer; }
+    .traffic-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .book-btn { background-color: #28a745; }
+    .enquire-btn { background-color: #ffc107; color: #212529; }
+    .cancel-btn { background-color: #dc3545; }
+    .dark-mode .enquire-btn { color: #121212; }
+
+    .mode-toggle { cursor: pointer; border: none; background: none; padding: 0.5rem; margin-left: 1rem; color: #000; }
+    .dark-mode .mode-toggle { color: #FFF; }
+    .mode-toggle .material-icons { transition: transform 0.3s ease; }
+    body.dark-mode .mode-toggle .material-icons { transform: rotate(180deg); }
+
+    .chevron { margin-left: auto; transition: transform 0.3s ease; }
+    .toggle-btn.open .chevron { transform: rotate(180deg); }
+
+    .fade-in { animation: fadeIn 0.6s ease; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+
+    #alert-container { max-width: 500px; margin: 0 auto; }
+    #next-btn .material-icons, #back-btn .material-icons { vertical-align: middle; margin-right: 0.5rem; }
+    #next-btn { margin-bottom: 6rem; }
+
+    .navbar-toggler { border: none; outline: none; box-shadow: none !important; transition: all 0.3s ease; }
+    .navbar-toggler:focus, .navbar-toggler:active { outline: none; box-shadow: none !important; transform: scale(1.1); }
+    .navbar-toggler:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <!-- Navbar placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="container position-relative" style="max-width: 500px; min-height: 400px;">
+    <div id="alert-container" class="mb-3"></div>
+
+    <!-- Screen 1: Event Selection -->
+    <div id="screen-select" class="screen active fade-slide">
+      <h1 class="display-5 mb-2 text-center ">Course & Guidings</h1>
+      <p class="lead text-center text-muted">Select duties to book</p>
+      <p class="lead text-center text-muted fs-6 mb-4">last updated on 09/28</p>
+      <div id="events-list" class="list-group mb-3"></div>
+
+      <!-- Name input just before submit -->
+      <!-- consider a better method, maybe a splash screen for name and check if its available -->
+      <div class="mb-5 fade-slide">
+        <div id="name-field" class="mb-5" style="display:none;">
+          <label for="volunteer-name" class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="volunteer-name" placeholder="Enter your name" required />
+        </div>
+      </div>
+
+      <div class="mt-1">
+        <div id="next-btn-wrapper" class="mt-5" style="display:none;">
+          <button type="button" id="next-btn" class="btn btn-success mx-auto d-block" disabled>
+            <span class="material-icons">check_circle</span> Book Courses
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Loading -->
+    <div id="screen-loading" class="screen text-center">
+      <p id="previewMessageIntro" class="fs-5 mb-2"></p>
+      <div class="spinner-border my-4" role="status"></div>
+      <p id="loading-message" class="text-muted"></p>
+    </div>
+
+    <!-- Screen 3: Preview -->
+    <div id="screen-preview" class="screen">
+      <p class="text-muted text-center mb-3">This will be sent to WhatsApp:</p>
+      <textarea id="whatsapp-msg" class="form-control mb-3" rows="8" readonly></textarea>
+      <button id="send-btn" class="btn btn-success w-100 mb-2"><i class="fa-brands fa-whatsapp"></i> Send via WhatsApp</button>
+      <button id="back-btn" class="btn btn-primary w-100"><span class="material-icons">arrow_back</span> Back to Courses</button>
+    </div>
+  </main>
+
+  <div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // --- Load Navbar Dynamically ---
+  fetch("navbar.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("navbar-placeholder").innerHTML = html;
+
+      const path = window.location.pathname.split("/").pop();
+      document.querySelectorAll("#navbar-placeholder .nav-link").forEach(link => {
+        if (link.getAttribute("href") === path) link.classList.add("active");
+        else link.classList.remove("active");
+      });
+
+      const modeToggle = document.getElementById('modeToggle');
+      const modeIcon = document.getElementById('modeIcon');
+      const body = document.body;
+      const savedMode = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (savedMode === 'dark' || (!savedMode && prefersDark)) enableDarkMode();
+
+      modeToggle.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) disableDarkMode();
+        else enableDarkMode();
+      });
+
+      function enableDarkMode() { body.classList.add('dark-mode'); modeIcon.textContent = 'light_mode'; localStorage.setItem('darkMode','dark'); }
+      function disableDarkMode() { body.classList.remove('dark-mode'); modeIcon.textContent = 'dark_mode'; localStorage.setItem('darkMode','light'); }
+    });
+
+  // --- Course Booking Logic ---
+  document.addEventListener("DOMContentLoaded", () => {
+    let events = [], selectedIndexes = [], currentMessage = "";
+
+    const funMessages = [
+      "🐟 Surgeonfish refining your selection...",
+      "🧜‍♀️ Mermaids preparing your request...",
+      "🐡 Pufferfish inflating your message...",
+      "🦀 Crabs double-checking your life choices...",
+      "🐙 Octopus organizing your events...",
+      "🐬 Dolphins relaying your request...",
+      "🐢 Turtles slowly processing...",
+      "🧽 Sponges soaking up typos...",
+      "🦑 Squids rewriting in ink...",
+      "🐠 Parrotfish repeating your message..."
+    ];
+
+<!--    Papa.parse("courses.csv", {-->
+    Papa.parse("courses.csv?nocache=" + new Date().getTime(), {
+      header: true,
+      download: true,
+      complete: r => {
+        if (r.data && r.data.length > 0) { events = r.data; displayEvents(); }
+        else showAlert("No events found in the CSV file. Please check the file contents.");
+      },
+      error: (err) => { console.error("Error loading CSV:", err); showAlert("Failed to load courses.csv."); }
+    });
+
+    function showAlert(message) {
+      const alertContainer = document.getElementById("alert-container");
+      alertContainer.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+      setTimeout(() => { const alert = alertContainer.querySelector(".alert"); if(alert) alert.remove(); }, 5000);
+    }
+
+    function switchScreen(fromId, toId) {
+      document.getElementById(fromId).classList.remove('active');
+      setTimeout(() => document.getElementById(toId).classList.add('active'), 10);
+    }
+
+    const nameInput = document.getElementById("volunteer-name");
+    function updateNextButton() {
+      document.getElementById("next-btn").disabled = !(selectedIndexes.length && nameInput.value.trim());
+    }
+    nameInput.addEventListener("input", updateNextButton);
+
+    <!-- 🔹🔹🔹 -->
+    <!-- 🔹🔹🔹 -->
+
+    // 'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec'  // official log
+    // 🔹 Webhook URLs array
+    const WEBHOOK_URLS = [
+      'https://script.google.com/macros/s/AKfycbzTGnWa8CM7bQaWX_yc5NDLGAe4twp3lKAwpei9OTjipqJp-hMYQT750gUSMiUT-6BvyQ/exec', // backup
+      'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec' // duplicate run backup
+
+    ];
+
+    // 🔹 Send payload to all webhook URLs
+    function sendToSheets(webhookData) {
+      WEBHOOK_URLS.forEach(url => {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookData),
+          mode: 'no-cors'
+        })
+        .then(() => console.log(`✅ Sent to ${url}`))
+        .catch(err => console.error(`❌ Error sending to ${url}:`, err));
+      });
+    }
+
+    document.getElementById("next-btn").addEventListener("click", () => {
+      if (!selectedIndexes.length || !nameInput.value.trim()) {
+        showAlert("Please select at least one course and enter your name.");
+        return;
+      }
+
+      switchScreen("screen-select", "screen-loading");
+      previewMessageIntro.innerHTML = `Thanks <span class="fw-medium">${nameInput.value.trim()}</span>!<br><br>`;
+      const funMsg = funMessages[Math.floor(Math.random() * funMessages.length)];
+      document.getElementById("loading-message").innerHTML = `${funMsg}`;
+
+      setTimeout(() => {
+        currentMessage = buildWhatsAppMessage(nameInput.value.trim());
+        document.getElementById("whatsapp-msg").value = currentMessage;
+        switchScreen("screen-loading", "screen-preview");
+      }, 1500);
+    });
+
+    document.getElementById("send-btn").addEventListener("click", () => {
+      if (!currentMessage) return;
+      const name = nameInput.value.trim();
+
+      selectedIndexes.forEach(i => {
+        const e = events[i];
+        const sheetPayload = {
+          token: 'just_to_stop_bots',
+          date: formatDate(e.Date),
+          time: (e.Time || '').split('-')[0].trim(),
+          name: name,
+          comment: `${e.TypeDetail} - ${e.School}`,
+          userAgent: navigator.userAgent || 'Unknown',
+          screenResolution: `${window.screen.width}x${window.screen.height}`
+        };
+
+        // 🔹 Send to all webhooks
+        sendToSheets(sheetPayload);
+      });
+
+      const encodedMessage = encodeURIComponent(currentMessage);
+      window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, "_blank");
+
+      switchScreen("screen-preview", "screen-select");
+      document.getElementById("sent-overlay").style.display = "block";
+      setTimeout(() => document.getElementById("sent-overlay").style.display = "none", 2000);
+      resetSelection();
+    });
+
+    document.getElementById("back-btn").addEventListener("click", () => switchScreen("screen-preview", "screen-select"));
+
+    <!-- 🔹🔹🔹 -->
+    <!-- 🔹🔹🔹 -->
+
+    function displayEvents() {
+      const list = document.getElementById("events-list");
+      list.innerHTML = "";
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      events
+        .filter(e => {
+          const eventDate = new Date(e.Date);
+          return !isNaN(eventDate.getTime()) && eventDate >= today;
+        })
+        .forEach((e, idx) => {
+          const barClass = e.TypeDetail.toLowerCase().includes("guiding") ? "bar-guiding" : e.TypeDetail.toLowerCase().includes("course") ? "bar-course" : "bar-other";
+          const date = new Date(e.Date);
+          const weekday = !isNaN(date.getTime()) ? date.toLocaleDateString('en-US', { weekday: 'short' }) : "";
+          const dateFormatted = !isNaN(date.getTime()) ? `${String(date.getDate()).padStart(2,'0')}-${date.toLocaleString('default',{month:'short'})}` : e.Date;
+
+          const item = document.createElement("div");
+          item.className = `list-group-item ${barClass}`;
+          item.style.animationDelay = `${idx * 0.15}s`; // make delay longer
+          item.innerHTML = `
+            <div class="list-group-item-header">
+              <div>📘 ${e.TypeDetail || 'No detail'}</div>
+              <span class="checkmark material-icons">check_circle</span>
+            </div>
+            <div class="mb-1">📅 ${dateFormatted} | ${weekday} | 🕘 ${e.Time || 'N/A'}</div>
+            <div class="text-muted small">🏫 ${e.School}</div>
+            <button class="btn btn-sm btn-outline-primary details-btn">Click for details</button>
+            <div class="drawer small text-muted">
+              ${e.Grade ? `🎓 Grade: ${e.Grade}<br>` : ""}
+              ${e.Facilitator ? `👩‍🏫 Facilitator: ${e.Facilitator}<br>` : ""}
+              ${e["Number of Learners"] ? `🧑‍🎓 Learners: ${e["Number of Learners"]}<br>` : ""}
+              ${e["No. of Guides still needed"] ? `🤼 Guides needed: ${e["No. of Guides still needed"]}<br>` : ""}
+              ${e["Guides Booked"] ? `👍 Booked: ${e["Guides Booked"]}<br>` : ""}
+              ${e.Shadowing ? `👻 Shadowing: ${e.Shadowing}<br>` : ""}
+            </div>
+          `;
+
+          item.addEventListener("click", ev => {
+            if (ev.target.classList.contains("details-btn")) return;
+            if (item.classList.contains("event-selected")) {
+              item.classList.remove("event-selected");
+              selectedIndexes = selectedIndexes.filter(i => i !== idx);
+            } else {
+              item.classList.add("event-selected");
+              selectedIndexes.push(idx);
+            }
+            document.getElementById("next-btn").disabled = !selectedIndexes.length;
+          });
+
+          item.querySelector(".details-btn").addEventListener("click", ev => {
+            ev.stopPropagation();
+            const drawer = item.querySelector(".drawer");
+            if (drawer.classList.contains("open")) {
+              drawer.style.height = drawer.scrollHeight + "px";
+              requestAnimationFrame(() => {
+                drawer.style.height = "0px";
+                drawer.classList.remove("open");
+              });
+            } else {
+              drawer.classList.add("open");
+              drawer.style.height = drawer.scrollHeight + "px";
+              drawer.addEventListener("transitionend", () => {
+                drawer.style.height = "auto";
+              }, { once: true });
+            }
+          });
+
+          list.appendChild(item);
+        });
+
+      // ✅ staged reveal
+      const nameField = document.getElementById("name-field");
+      const nextWrapper = document.getElementById("next-btn-wrapper");
+
+      // step 1: show name field with fade
+      nameField.style.display = "block";
+      requestAnimationFrame(() => {
+        nameField.classList.add("fade-slide");
+      });
+
+      // step 2: after a small delay, show the Next button with fade
+      setTimeout(() => {
+        nextWrapper.style.display = "block";
+        requestAnimationFrame(() => {
+          nextWrapper.classList.add("fade-slide");
+        });
+      }, 300); // delay in ms
+
+
+    }
+
+    <!-- 🔹🔹🔹 -->
+    <!-- 🔹🔹🔹 -->
+
+    function buildWhatsAppMessage(name) {
+      let msg = `📚 *Course & Guidings Request - ${name}*\n\n👤 Name: ${name}\n\n`;
+      selectedIndexes.forEach(i => {
+        const e = events[i];
+        msg += `📅 ${formatDate(e.Date)}\n🕘 ${e.Time || "N/A"}\n🏫 ${e.School}\n📘 ${e.TypeDetail}\n\n---\n\n`;
+      });
+      return msg.trim();
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+
+    function resetSelection() {
+      selectedIndexes = [];
+      document.getElementById("events-list").querySelectorAll(".list-group-item").forEach(item => item.classList.remove("event-selected"));
+      document.getElementById("volunteer-name").value = "";
+      updateNextButton();
+    }
+  });
+</script>
+
+</body>
+</html>
