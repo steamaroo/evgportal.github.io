@@ -1,31 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic Meta Tags -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EVG Portal Cancel</title>
+  <title>Aquarium Volunteer Cancellation</title>
 
   <!-- External Resources -->
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-  <!-- Material Icons for Dark Mode Toggle -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
   <style>
-    /* Base styling for all elements */
+    /* Base styling */
     body, input, textarea, button {
       font-family: 'Roboto', sans-serif;
-      transition: all 0.3s ease; /* Smooth transitions for dark mode */
+      transition: all 0.3s ease;
     }
 
     body {
-      padding-top: 70px; /* offset for fixed navbar */
+      padding-top: 70px;
       background-color: #fdfdfd; /* Light mode background */
+      color: #212529; /* Light mode text */
     }
 
     /* Dark mode styles */
@@ -34,49 +30,31 @@
       color: #f5f5f5;
     }
 
-    .dark-mode .navbar-dark {
+    body.dark-mode .navbar-dark {
       background-color: #1a1a1a !important;
     }
 
-    .dark-mode .text-muted {
+    body.dark-mode .text-muted {
       color: #aaaaaa !important;
     }
 
-    .dark-mode #preview-message {
+    body.dark-mode .form-label {
+      color: #f5f5f5;
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select,
+    body.dark-mode textarea {
       background-color: #2d2d2d;
       border-color: #444;
       color: #f5f5f5;
     }
 
-    .dark-mode .form-control,
-    .dark-mode .form-select {
-      background-color: #2d2d2d;
-      border-color: #444;
-      color: #f5f5f5;
-    }
-
-    .dark-mode .form-label {
-      color: #f5f5f5;
-    }
-
-    .dark-mode .text-muted {
-      color: #9ca3af !important; /* A lighter gray for dark mode */
-    }
-
-    /* If you're using actual placeholder attributes, add this: */
-    .dark-mode ::placeholder {
+    body.dark-mode ::placeholder {
       color: #9ca3af !important;
     }
 
-    .dark-mode :-ms-input-placeholder {
-      color: #9ca3af !important;
-    }
-
-    .dark-mode ::-ms-input-placeholder {
-      color: #9ca3af !important;
-    }
-
-    /* Screen transition styling */
+    /* Screens */
     .screen {
       display: none;
       opacity: 0;
@@ -94,20 +72,7 @@
       z-index: 1;
     }
 
-    /* Thank you screen styling */
-    #screen-thankyou {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      min-height: 400px;
-      text-align: center;
-      gap: 2rem;
-      padding: 1rem;
-    }
-
-    /* Message preview styling */
+    /* WhatsApp preview message */
     #preview-message {
       white-space: normal;
       font-size: 1rem;
@@ -118,6 +83,13 @@
       max-width: 500px;
       margin: 0 auto;
       box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+      color: #212529;
+    }
+
+    body.dark-mode #preview-message {
+      background-color: #2d2d2d;
+      border-color: #444;
+      color: #f5f5f5;
     }
 
     #preview-message p {
@@ -134,6 +106,10 @@
       flex-shrink: 0;
     }
 
+    body.dark-mode #preview-message p label {
+      color: #4dabf7;
+    }
+
     #preview-message p span.value {
       font-weight: 500;
       text-align: right;
@@ -141,351 +117,262 @@
       word-break: break-word;
     }
 
-    /* Dark mode adjustments for preview message */
-    .dark-mode #preview-message p label {
-      color: #4dabf7;
-    }
-
-    /* Back button styling */
+    /* Back button */
     .back-btn {
       margin-top: 1rem;
     }
 
-    /* Dark mode toggle button */
+    /* Spinner */
+    .spinner-border {
+      width: 4rem;
+      height: 4rem;
+      margin: 2rem auto;
+    }
+
+    /* Mode toggle */
     .mode-toggle {
       cursor: pointer;
       border: none;
       background: none;
       padding: 0.5rem;
       margin-left: 1rem;
-      color: white;
+      color: #000;
     }
 
-    /* Navbar dark mode adjustments */
-    .dark-mode .navbar-dark {
-      background-color: #1a1a1a !important;
+    .dark-mode .mode-toggle {
+      color: #FFF;
+    }
+
+    /* Alerts */
+    .alert {
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode .alert {
+      background-color: #2a2a2a;
+      border-color: #444;
+      color: #f5f5f5;
     }
   </style>
+
 </head>
 <body>
 
-<!-- Main Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-danger fixed-top shadow-sm">
-  <div class="container">
-    <!-- Brand/logo linking to home -->
-    <a class="navbar-brand fw-medium text-white" href="index.html">🐠 GRG Cancellation</a>
+  <div id="navbar-placeholder"></div>
 
-    <!-- Dark mode toggle button -->
-    <button class="mode-toggle" id="modeToggle">
-      <span class="material-icons" id="modeIcon">dark_mode</span>
-    </button>
+  <main class="container position-relative" style="min-height: 400px;">
 
-    <!-- Mobile menu toggle button -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div id="alert-container" class="mb-3"></div>
 
-    <!-- Navigation links -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="booking.html">Book</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="enquire.html">Enquire</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active text-white" href="cancel.html">Cancel</a>
-        </li>
-      </ul>
+    <!-- Form Screen -->
+    <div id="screen-form" class="screen active">
+      <h1 class="display-5 mb-2 text-center">GRG Cancel</h1>
+      <p class="lead text-center text-muted mb-4">Select a day(s) to cancel</p>
+      <form id="cancel-form" novalidate>
+        <div class="mb-4">
+          <label for="date-picker" class="form-label">Select Booked Date</label>
+          <input type="date" class="form-control" id="date-picker" required />
+        </div>
+
+        <div id="time-slots" class="mb-3">
+          <p class="text-muted">Select a date to see available time slots.</p>
+        </div>
+
+        <div class="mb-3">
+          <label for="volunteer-name" class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="volunteer-name" placeholder="Enter your name" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="comment" class="form-label">Reason (Optional)</label>
+          <textarea class="form-control" id="comment" rows="2" maxlength="300" placeholder="Comment"></textarea>
+        </div>
+
+        <button type="button" id="submit-btn" class="btn btn-danger mx-auto d-block">Request Cancellation</button>
+      </form>
     </div>
-  </div>
-</nav>
 
-<!-- Main Content Container -->
-<main class="container position-relative" style="min-height: 400px;">
-  <!-- Alert container for validation messages -->
-  <div id="alert-container" class="mb-3"></div>
+    <!-- Loading / Thank You Screen -->
+    <div id="screen-loading" class="screen text-center">
+      <p id="loading-message" class="fs-5 mb-3"></p>
+      <div class="spinner-border" role="status"></div>
+    </div>
 
-  <!-- Form Screen (initial active screen) -->
-  <div id="screen-form" class="screen active">
-    <form id="cancel-form" novalidate>
-      <!-- Date selection -->
-      <div class="mb-4">
-        <label for="date-picker" class="form-label">Select Booked Date</label>
-        <input type="date" class="form-control" id="date-picker" required />
-      </div>
 
-      <!-- Time slots (dynamically populated) -->
-      <div id="time-slots" class="mb-3">
-        <p class="text-muted">Select a date to see available time slots.</p>
-      </div>
+    <!-- WhatsApp Preview Screen -->
+    <div id="screen-whatsapp" class="screen">
+      <p class="text-muted text-center mb-3">This will be sent to WhatsApp:</p>
+      <pre id="preview-message" class="card-text mb-3"></pre>
+      <button id="send-btn" class="btn btn-success w-100 mb-2"><i class="fa-brands fa-whatsapp"></i> Send via WhatsApp</button>
+      <button id="back-btn" class="btn btn-primary w-100 back-btn">⬅️ Back to Form</button>
+    </div>
+  </main>
 
-      <!-- Name input -->
-      <div class="mb-3">
-        <label for="volunteer-name" class="form-label">Your Name</label>
-        <input type="text" class="form-control" id="volunteer-name" placeholder="Enter your name" required />
-      </div>
+  <div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
 
-      <!-- Cancellation reason (optional) -->
-      <div class="mb-3">
-        <label for="comment" class="form-label">Reason for Cancellation (Optional)</label>
-        <textarea class="form-control" id="comment" rows="2" maxlength="300" placeholder="If you would like to get into details"></textarea>
-      </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-      <!-- Submit button -->
-      <button type="button" id="submit-btn" class="btn btn-danger mx-auto d-block">Request Cancellation</button>
-    </form>
-  </div>
+  <script>
+    // --- Load Navbar Dynamically ---
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar-placeholder").innerHTML = html;
 
-  <!-- Thank You Screen -->
-  <div id="screen-thankyou" class="screen text-center">
-    <p id="previewMessageIntro" class="fs-5 mb-2"></p>
-    <p id="please-wait" class="text-secondary"></p>
-  </div>
+        const path = window.location.pathname.split("/").pop();
+        document.querySelectorAll("#navbar-placeholder .nav-link").forEach(link => {
+          link.classList.toggle("active", link.getAttribute("href") === path);
+        });
 
-  <!-- WhatsApp Preview Screen -->
-  <div id="screen-whatsapp" class="screen">
-    <p class="text-muted text-center mb-3">This will be sent to WhatsApp:</p>
-    <pre id="preview-message" class="card-text mb-3"></pre>
-    <button id="send-btn" class="btn btn-success w-100">
-      <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
-    </button>
-    <button id="back-btn" class="btn btn-secondary w-100 back-btn">
-      ⬅️ Back to Form
-    </button>
-  </div>
-</main>
+        // Dark mode toggle
+        const modeToggle = document.getElementById('modeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        const body = document.body;
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-<!-- Success message overlay -->
-<div id="sent-overlay" class="text-center text-success fw-bold mt-4" style="display:none;">Sent! Check WhatsApp</div>
+        if (savedMode === 'dark' || (!savedMode && prefersDark)) body.classList.add('dark-mode');
 
-<!-- Main JavaScript -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Configuration
-  const WHATSAPP_PREVIEW_DELAY_MS = 2000;
-  const DAYS_TO_LOOK_AHEAD = 60;
-
-  // Available time slots
-  const timeSlots = [
-    "09:00 - 14:00",
-    "10:00 - 15:00",
-    "11:00 - 16:00",
-    "12:00 - 17:00",
-    "11:00 - 14:00",
-    "12:00 - 15:00"
-  ];
-
-  // DOM Elements
-  const screenForm = document.getElementById('screen-form');
-  const screenThankYou = document.getElementById('screen-thankyou');
-  const screenWhatsApp = document.getElementById('screen-whatsapp');
-  const datePicker = document.getElementById('date-picker');
-  const timeSlotsDiv = document.getElementById('time-slots');
-  const volunteerName = document.getElementById('volunteer-name');
-  const commentField = document.getElementById('comment');
-  const submitBtn = document.getElementById('submit-btn');
-  const previewMessageIntro = document.getElementById('previewMessageIntro');
-  const previewMessage = document.getElementById('preview-message');
-  const sendBtn = document.getElementById('send-btn');
-  const backBtn = document.getElementById('back-btn');
-  const sentOverlay = document.getElementById('sent-overlay');
-  const alertContainer = document.getElementById('alert-container');
-
-  // State variables
-  let selectedDate = null;
-  let selectedTime = null;
-  let currentMessage = null;
-
-  // Set date picker constraints
-  const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-  const maxDate = new Date();
-  maxDate.setDate(today.getDate() + DAYS_TO_LOOK_AHEAD);
-  const maxDateStr = maxDate.toISOString().split('T')[0];
-  datePicker.setAttribute('min', todayStr);
-  datePicker.setAttribute('max', maxDateStr);
-
-  // Format date for display
-  function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  }
-
-  // Show alert message
-  function showAlert(message) {
-    alertContainer.innerHTML = '';
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    alertContainer.appendChild(alertDiv);
-    alertDiv.scrollIntoView({ behavior: 'smooth' });
-
-    setTimeout(() => alertDiv.remove(), 5000);
-  }
-
-  // Switch between screens
-  function switchScreen(from, to) {
-    from.classList.remove('active');
-    setTimeout(() => to.classList.add('active'), 10);
-  }
-
-  // Date picker change handler
-  datePicker.addEventListener('change', (e) => {
-    selectedDate = e.target.value;
-    selectedTime = null;
-    previewMessage.innerHTML = '';
-    previewMessageIntro.innerHTML = '';
-    timeSlotsDiv.innerHTML = '';
-
-    if (selectedDate) {
-      const select = document.createElement('select');
-      select.className = 'form-select';
-      select.innerHTML = '<option value="">Select a time slot</option>' +
-        timeSlots.map(slot => `<option value="${slot}">${slot}</option>`).join('');
-      timeSlotsDiv.appendChild(select);
-
-      select.addEventListener('change', (e) => {
-        selectedTime = e.target.value;
+        if (modeToggle) modeToggle.addEventListener('click', () => {
+          body.classList.toggle('dark-mode');
+          if(body.classList.contains('dark-mode')) localStorage.setItem('darkMode','dark');
+          else localStorage.setItem('darkMode','light');
+        });
       });
-    } else {
-      timeSlotsDiv.innerHTML = '<p class="text-muted">Select a date to see available time slots.</p>';
-    }
-  });
 
-  // Submit button handler
-  submitBtn.addEventListener('click', () => {
-    if (!selectedDate) {
-      showAlert("Please select the booking date you wish to cancel.");
-      return;
-    }
-    if (!selectedTime) {
-      showAlert("Please select the time slot of your booking.");
-      return;
-    }
-    const name = volunteerName.value.trim();
-    if (!name) {
-      showAlert("Please enter your name to identify your booking.");
-      return;
-    }
+    // --- Cancellation Form Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const DAYS_TO_LOOK_AHEAD = 60;
+      const timeSlots = ["09:00 - 14:00","10:00 - 15:00","11:00 - 16:00","12:00 - 17:00","11:00 - 14:00","12:00 - 15:00"];
 
-    const comment = commentField.value.trim().slice(0, 100);
-    const formattedDate = formatDate(selectedDate);
+      const screenForm = document.getElementById('screen-form');
+      const screenLoading = document.getElementById('screen-loading');
+      const screenWhatsApp = document.getElementById('screen-whatsapp');
+      const datePicker = document.getElementById('date-picker');
+      const timeSlotsDiv = document.getElementById('time-slots');
+      const volunteerName = document.getElementById('volunteer-name');
+      const commentField = document.getElementById('comment');
+      const submitBtn = document.getElementById('submit-btn');
+      const previewMessage = document.getElementById('preview-message');
+      const sendBtn = document.getElementById('send-btn');
+      const backBtn = document.getElementById('back-btn');
+      const sentOverlay = document.getElementById('sent-overlay');
+      const alertContainer = document.getElementById('alert-container');
 
-    // Thank you message
-    const thankYouMessage = `
-      Thanks <span class="fw-medium">${name}</span>!<br><br>
-      You've requested cancellation for <span class="fw-medium">${formattedDate}</span> from <span class="fw-medium">${selectedTime}</span>.
-    `;
-    previewMessageIntro.innerHTML = thankYouMessage;
-    document.getElementById('please-wait').textContent = "Please wait while we prepare the message...";
+      let selectedDate = null;
+      let selectedTime = null;
+      let currentMessage = null;
 
-    // Construct WhatsApp message
-    currentMessage = `❌ *GRG Cancellation Request – ${formattedDate} - ${name}*\n\n` +
-                     `🙋‍♂️ *Name:* ${name}\n` +
-                     `📅️ *Date:* ${formattedDate}\n` +
-                     `🕰️ *Time Slot:* ${selectedTime}`;
-    if (comment) {
-      currentMessage += `\n📝 *Comment:* ${comment}`;
-    }
+      // Date picker constraints
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + DAYS_TO_LOOK_AHEAD);
+      datePicker.setAttribute('min', todayStr);
+      datePicker.setAttribute('max', maxDate.toISOString().split('T')[0]);
 
-    switchScreen(screenForm, screenThankYou);
-
-    // Show WhatsApp preview after delay
-    setTimeout(() => {
-      previewMessage.innerHTML = '';
-      const details = [
-        { label: 'Name:', value: name },
-        { label: 'Booked Date:', value: formattedDate },
-        { label: 'Time Slot:', value: selectedTime }
-      ];
-      if (comment) {
-        details.push({ label: 'Reason:', value: comment });
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US',{ weekday:'short', day:'numeric', month:'short', year:'numeric' });
       }
 
-      // Build preview message
-      details.forEach(({ label, value }) => {
-        previewMessage.innerHTML += `
-          <p><label>${label}</label><span class="value">${value}</span></p>
-        `;
+      function showAlert(message) {
+        alertContainer.innerHTML = '';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+        alertContainer.appendChild(alertDiv);
+        alertDiv.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => alertDiv.remove(), 5000);
+      }
+
+      function switchScreen(from, to) {
+        from.classList.remove('active');
+        setTimeout(() => to.classList.add('active'), 10);
+      }
+
+      // Date picker change
+      datePicker.addEventListener('change', e => {
+        selectedDate = e.target.value;
+        selectedTime = null;
+        previewMessage.innerHTML = '';
+        timeSlotsDiv.innerHTML = '';
+
+        if (selectedDate) {
+          const select = document.createElement('select');
+          select.className = 'form-select';
+          select.innerHTML = '<option value="">Select a time slot</option>' + timeSlots.map(slot => `<option value="${slot}">${slot}</option>`).join('');
+          timeSlotsDiv.appendChild(select);
+          select.addEventListener('change', e => selectedTime = e.target.value);
+        } else {
+          timeSlotsDiv.innerHTML = '<p class="text-muted">Select a date to see available time slots.</p>';
+        }
       });
 
-      switchScreen(screenThankYou, screenWhatsApp);
-    }, WHATSAPP_PREVIEW_DELAY_MS);
-  });
+      // Submit button
+      submitBtn.addEventListener('click', () => {
+        if (!selectedDate) return showAlert("Please select the booking date you wish to cancel.");
+        if (!selectedTime) return showAlert("Please select the time slot of your booking.");
+        const name = volunteerName.value.trim();
+        if (!name) return showAlert("Please enter your name.");
 
-  // WhatsApp send button handler
-  sendBtn.addEventListener('click', () => {
-    if (!currentMessage) return;
-    const encodedMessage = encodeURIComponent(currentMessage);
-    window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+        const comment = commentField.value.trim().slice(0, 100);
+        const formattedDate = formatDate(selectedDate);
 
-    switchScreen(screenWhatsApp, screenForm);
-    sentOverlay.style.display = 'block';
-    setTimeout(() => { sentOverlay.style.display = 'none'; }, 2000);
+        currentMessage = `❌ *GRG Cancellation Request – ${formattedDate} - ${name}*\n\n🙋‍♂️ *Name:* ${name}\n📅 *Date:* ${formattedDate}\n🕰️ *Time Slot:* ${selectedTime}`;
+        if (comment) currentMessage += `\n📝 *Comment:* ${comment}`;
 
-    // Reset form
-    document.getElementById('cancel-form').reset();
-    selectedDate = null;
-    selectedTime = null;
-    currentMessage = null;
-    timeSlotsDiv.innerHTML = '<p class="text-muted">Select a date to see available time slots.</p>';
-  });
+        // Show loading screen
+        switchScreen(screenForm, screenLoading);
 
-  // Back button handler
-  backBtn.addEventListener('click', () => {
-    switchScreen(screenWhatsApp, screenForm);
-  });
+        // Show thank-you text above spinner
+        document.getElementById('loading-message').innerHTML = `
+          Thanks <span class="fw-medium">${name}</span>!<br><br>
+          You've requested cancellation for <strong>${formattedDate}</strong> from <strong>${selectedTime}</strong>.<br>
+          Please wait while we prepare your message...
+        `;
 
-  // Dark Mode Toggle Functionality
-  const modeToggle = document.getElementById('modeToggle');
-  const modeIcon = document.getElementById('modeIcon');
-  const body = document.body;
+        setTimeout(() => {
+          // Populate WhatsApp preview
+          const details = [
+            { label: 'Name:', value: name },
+            { label: 'Booked Date:', value: formattedDate },
+            { label: 'Time Slot:', value: selectedTime }
+          ];
+          if (comment) details.push({ label: 'Reason:', value: comment });
 
-  // Check for saved user preference or use system preference
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const savedMode = localStorage.getItem('darkMode');
+          previewMessage.innerHTML = '';
+          details.forEach(({ label, value }) => {
+            previewMessage.innerHTML += `<p><label>${label}</label><span class="value">${value}</span></p>`;
+          });
 
-  // Set initial mode
-  if (savedMode === 'dark' || (!savedMode && prefersDark)) {
-    enableDarkMode();
-  }
+          switchScreen(screenLoading, screenWhatsApp);
+        }, 1500); // 1.5 seconds spinner
+      });
 
-  // Toggle dark/light mode
-  modeToggle.addEventListener('click', function() {
-    if (body.classList.contains('dark-mode')) {
-      disableDarkMode();
-    } else {
-      enableDarkMode();
-    }
-  });
 
-  function enableDarkMode() {
-    body.classList.add('dark-mode');
-    modeIcon.textContent = 'light_mode';
-    localStorage.setItem('darkMode', 'dark');
-  }
+      // WhatsApp send
+      sendBtn.addEventListener('click', () => {
+        if (!currentMessage) return;
+        const encodedMessage = encodeURIComponent(currentMessage);
+        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
 
-  function disableDarkMode() {
-    body.classList.remove('dark-mode');
-    modeIcon.textContent = 'dark_mode';
-    localStorage.setItem('darkMode', 'light');
-  }
-});
-</script>
+        switchScreen(screenWhatsApp, screenForm);
+        sentOverlay.style.display = 'block';
+        setTimeout(() => sentOverlay.style.display = 'none', 2000);
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        // Reset form
+        document.getElementById('cancel-form').reset();
+        selectedDate = null;
+        selectedTime = null;
+        currentMessage = null;
+        timeSlotsDiv.innerHTML = '<p class="text-muted">Select a date to see available time slots.</p>';
+      });
+
+      backBtn.addEventListener('click', () => switchScreen(screenWhatsApp, screenForm));
+    });
+  </script>
+
 </body>
 </html>
