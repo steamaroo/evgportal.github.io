@@ -6,46 +6,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EVG Portal</title>
 
-  <!-- External Resources -->
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
 
-  <!-- Custom CSS Styles -->
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #fdfdfd;
-      padding-top: 70px;
-      transition: all 0.3s ease;
+<style>
+
+    /* ==========================
+       CSS Variables (Theme Colors)
+       ========================== */
+    :root {
+      --main-color: #3498db; /* Primary brand blue */
+      --dark-mode-light-text-color: #121212; /* Dark text for light backgrounds */
+      --light-text-color: #f5f5f5; /* Light text for dark backgrounds */
+      --dark-mode-white: #f5f5f5; /* White-ish text for dark mode */
+      --dark : #212529; /* Bootstrap dark gray */
+      --light: #aaaaaa; /* Muted gray */
+      --dark-text : #121212; /* Standard dark text */
+      --bootstrap-red : #dc3545; /* Bootstrap red */
     }
 
+    /* ==========================
+       Transition Setup
+       ========================== */
+    /* Ensure navbar, text, buttons, toggle, and icons animate colors smoothly
+       when switching between dark and light modes */
+    .navbar,
+    .text-muted,
+    .traffic-btn,
+    .book-btn,
+    .enquire-btn,
+    .cancel-btn,
+    .mode-toggle,
+    .material-icons {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ==========================
+       Base Body Styling
+       ========================== */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #fdfdfd; /* Light mode background */
+      padding-top: 70px; /* Account for fixed navbar */
+      transition: all 0.3s ease; /* Smooth page-wide transitions */
+    }
+
+    /* Dark Mode Base */
     body.dark-mode {
       background-color: #121212;
       color: #f5f5f5;
     }
 
+    /* Navbar in Dark Mode */
     .dark-mode .navbar {
       background-color: #1a1a1a !important;
-      color: #f5f5f5;
     }
 
-    .dark-mode .navbar-brand,
-    .dark-mode .nav-link {
-      color: #f5f5f5 !important;
-    }
-
+    /* Muted text in Dark Mode */
     .dark-mode .text-muted {
       color: #aaaaaa !important;
     }
 
-    .dark-mode .bg-light {
-      background-color: #1a1a1a !important;
+    /* Only affects this container */
+    .container.d-grid.custom-gap {
+      row-gap: 2.0rem; /* overrides gap-4 */
     }
 
+
+    /* ==========================
+       Traffic Button Styles
+       ========================== */
     .traffic-btn {
       font-size: 1.25rem;
       padding: 0.75rem 1.5rem;
@@ -58,151 +94,290 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out; /* Hover/press animations */
       text-decoration: none;
       color: white;
+      /* initial animation state */
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.6s ease forwards;
     }
 
+    /* Hover effect for traffic buttons */
     .traffic-btn:hover {
       opacity: 0.9;
       transform: translateY(-1px);
     }
 
+    /* Base hidden state */
+    .fade-slide {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.6s ease forwards;
+    }
+
+    /* 👇 Animation keyframes */
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 👇 Stagger each button */
+    .traffic-btn:nth-child(1) { animation-delay: 0.1s; }
+    .traffic-btn:nth-child(2) { animation-delay: 0.2s; }
+    .traffic-btn:nth-child(3) { animation-delay: 0.3s; }
+    .traffic-btn:nth-child(4) { animation-delay: 0.4s; }
+    .call-me { animation-delay: 1s; }
+
+    /* ==========================
+       Buttons Light Mode
+       ========================== */
     .book-btn {
-      background-color: #28a745;
+      background-color: #28a745; /* Green */
+      color: #f5f5f5;
     }
 
     .enquire-btn {
-      background-color: #ffc107;
-      color: #212529;
-    }
-
-    .cancel-btn {
-      background-color: #dc3545;
-    }
-
-    .dark-mode .enquire-btn {
+      background-color: #FFA500; /* Orange */
       color: #121212;
     }
 
+    .cancel-btn {
+      background-color: #dc3545; /* Red */
+      color: #121212;
+    }
+
+    /* ==========================
+       Buttons Dark Mode Overrides
+       ========================== */
+
+    .traffic-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .book-btn { background-color: #28a745; color: #121212; }
+    .enquire-btn { background-color: #ffc107; color: #212529; }
+    .cancel-btn { background-color: #dc3545; color: #121212; }
+    .dark-mode .enquire-btn { color: #121212; }
+    .dark-mode .book-btn { color: #121212; }
+    .dark-mode .cancel-btn { color: #121212; }
+
+    /* ==========================
+       Dark Mode Toggle Button
+       ========================== */
     .mode-toggle {
       cursor: pointer;
       border: none;
       background: none;
       padding: 0.5rem;
       margin-left: 1rem;
+      color: var(--dark);
     }
 
+    /* Dark Mode hover effect for traffic buttons */
+    .dark-mode .traffic-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* Navbar toggler (hamburger) color in dark mode */
+    .dark-mode .navbar-toggler {
+      color: #212529;
+    }
+
+    /* Toggle button color in dark mode */
+    .dark-mode .mode-toggle {
+      color: white;
+    }
+
+    /* Animate dark/light mode icon rotation */
+    .mode-toggle .material-icons {
+      transition: transform 0.3s ease;
+    }
+
+    body.dark-mode .mode-toggle .material-icons {
+      transform: rotate(180deg);
+    }
+
+    /* Chevron arrow inside traffic buttons */
+    .traffic-btn .chevron {
+      transition: transform 0.2s ease;
+    }
+
+    .traffic-btn:active .chevron {
+      transform: translateX(16px); /* Slide right when pressed */
+    }
+
+    /* ==========================
+       Navbar Toggler (Hamburger) Outline Fix
+       ========================== */
+    /* Bootstrap normally adds a glow outline via box-shadow on focus.
+       This removes it for a cleaner look. */
+    .navbar-toggler:focus {
+      outline: none; /* Removes browser outline */
+      box-shadow: none; /* Removes Bootstrap glow */
+    }
+
+     /* =========================
+       Navbar Hamburger / Toggler
+       ========================= */
+    .navbar-toggler {
+      border: none;
+      outline: none;
+      box-shadow: none !important;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:focus,
+    .navbar-toggler:active {
+      outline: none;
+      box-shadow: none !important;
+      transform: scale(1.1);
+    }
+
+    .navbar-toggler:hover {
+      transform: scale(1.05);
+    }
+
+    .navbar-dark .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.85)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      transition: all 0.3s ease;
+    }
+
+    .navbar-light .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0,0,0,0.75)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      transition: all 0.3s ease;
+    }
+
+    /* ==========================
+       Responsive Adjustments
+       ========================== */
     @media (max-width: 576px) {
       .traffic-btn {
-        font-size: 1.1rem;
+        font-size: 1.1rem; /* Slightly smaller on small screens */
       }
     }
-  </style>
+
+</style>
+
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-    <div class="container">
-      <!-- Logo -->
-      <a class="navbar-brand fw-medium" href="#">🐠 Volunteers</a>
-
-      <!-- Dark Mode Toggle (hidden on xs) -->
-      <button class="mode-toggle d-none d-sm-inline-block" id="modeToggle" aria-label="Toggle dark mode" data-bs-toggle="tooltip" title="Toggle dark mode">
-        <span class="material-icons" id="modeIcon">dark_mode</span>
-      </button>
-
-      <!-- Hamburger -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-
-      <!-- Links -->
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="booking.html">Book</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="enquire.html">Enquire</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cancel.html">Cancel</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- Shared Navbar -->
+  <div id="navbar-placeholder"></div>
 
   <!-- Page Header -->
-  <h1 class="display-5 mb-2 text-center">EVG Booking Portal</h1>
-  <p class="lead text-center text-muted">Book a duty, make an enquiry, or cancel your slot — all in one place.</p>
+  <div class="container text-center mt-3 fade-slide">
+    <h1 class="display-5 mb-2">Volunteer Booking Portal</h1>
+    <p class="lead text-muted mb-5">Book a GRG duty, course or guiding.</p>
+  </div>
 
-  <!-- Main Buttons -->
-  <div class="container d-grid gap-3 mt-4" style="max-width: 500px;">
+  <div class="container d-grid custom-gap mt-4" style="max-width: 500px;">
     <a href="booking.html" class="traffic-btn book-btn">
-      <span class="material-icons">check_circle</span> Book a Slot
+      <span class="material-icons">transcribe</span>
+      <span class="text flex-fill">Book a GRG slot</span>
+      <span class="material-icons chevron">chevron_right</span>
     </a>
+
     <a href="enquire.html" class="traffic-btn enquire-btn">
-      <span class="material-icons">help_outline</span> Make an Enquiry
+      <span class="material-icons">help_outline</span>
+      <span class="text flex-fill">Make an Enquiry</span>
+      <span class="material-icons chevron">chevron_right</span>
     </a>
+
+    <a href="courses.html" class="traffic-btn book-btn">
+      <span class="material-icons">assignment</span>
+      <span class="text flex-fill">Book a Course or Guiding</span>
+      <span class="material-icons chevron">chevron_right</span>
+    </a>
+
     <a href="cancel.html" class="traffic-btn cancel-btn">
-      <span class="material-icons">cancel</span> Cancel a Booking
+      <span class="material-icons">cancel</span>
+      <span class="text flex-fill">Cancel a Booking</span>
+      <span class="material-icons chevron">chevron_right</span>
     </a>
   </div>
 
   <!-- Footer -->
-  <p class="text-center text-muted mt-4">
-    Feeling a bit lost at sea? 🚢 Reach out to us at
-    <a href="mailto:volunteer.saambr@gmail.com">volunteer.saambr@gmail.com</a>
-    or give us a call at
-    <a href="tel:+27837989429">083 798 9429</a> — we’ll help you navigate!
+<!--  <p class="text-center text-muted mt-4 fade-slide">-->
+<!--    Feeling a bit lost at sea? 🚢 Reach out to us at-->
+<!--    <a href="mailto:volunteer.saambr@gmail.com">volunteer.saambr@gmail.com</a>-->
+<!--    or give us a call at-->
+<!--    <a href="tel:+27837989429">083 798 9429</a> — we’ll help you navigate!-->
+<!--  </p>-->
+
+  <p class="text-center text-muted mt-5 fade-slide call-me">
+    Need help? Whatsapp <a href="tel:+27837989429">083 798 9429</a>
   </p>
 
-  <!-- Bootstrap Bundle (with Popper) -->
+  <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Dark Mode Toggle Script -->
+  <!-- Navbar + Dark Mode Loader -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const modeToggle = document.getElementById('modeToggle');
-      const modeIcon = document.getElementById('modeIcon');
-      const body = document.body;
+  document.addEventListener('DOMContentLoaded', () => {
+    // =========================
+    // Animate Traffic Buttons Dynamically
+    // =========================
+    const buttons = document.querySelectorAll('.traffic-btn');
+    buttons.forEach((btn, i) => {
+      // Stagger each button by 0.2s (adjust as needed)
+      btn.style.animationDelay = `${0.15 * i}s`;
+    });
 
-      // Tooltip
-      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+    // =========================
+    // Load Navbar and Setup Dark Mode
+    // =========================
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar-placeholder").innerHTML = html;
 
-      // Load saved preference or default to system
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const savedMode = localStorage.getItem('darkMode');
-      if (savedMode === 'dark' || (!savedMode && prefersDark)) {
-        enableDarkMode();
-      }
+        // Highlight active nav link
+        const path = window.location.pathname.split("/").pop();
+        document.querySelectorAll("#navbar-placeholder .nav-link").forEach(link => {
+          if (link.getAttribute("href") === path || (path === "" && link.getAttribute("href") === "index.html")) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
 
-      modeToggle?.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-          disableDarkMode();
-        } else {
+        // Dark mode toggle setup
+        const modeToggle = document.getElementById('modeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        const body = document.body;
+
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedMode === 'dark' || (!savedMode && prefersDark)) {
           enableDarkMode();
         }
+
+        modeToggle.addEventListener('click', () => {
+          if (body.classList.contains('dark-mode')) {
+            disableDarkMode();
+          } else {
+            enableDarkMode();
+          }
+        });
+
+        function enableDarkMode() {
+          body.classList.add('dark-mode');
+          modeIcon.textContent = 'light_mode';
+          modeToggle.title = 'Switch to light mode';
+          localStorage.setItem('darkMode', 'dark');
+        }
+
+        function disableDarkMode() {
+          body.classList.remove('dark-mode');
+          modeIcon.textContent = 'dark_mode';
+          modeToggle.title = 'Switch to light mode';
+          localStorage.setItem('darkMode', 'light');
+        }
       });
-
-      function enableDarkMode() {
-        body.classList.add('dark-mode');
-        modeIcon.textContent = 'light_mode';
-        localStorage.setItem('darkMode', 'dark');
-      }
-
-      function disableDarkMode() {
-        body.classList.remove('dark-mode');
-        modeIcon.textContent = 'dark_mode';
-        localStorage.setItem('darkMode', 'light');
-      }
-    });
+  });
   </script>
+
 </body>
 </html>
