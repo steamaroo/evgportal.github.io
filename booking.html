@@ -1,3 +1,8 @@
+<!-- V2.0.3 -->
+<!-- added messages to date, time and name validation -->
+<!-- dropped some loading messages -->
+<!-- added instructions on final preview screen -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,9 +183,24 @@
     body.dark-mode .mode-toggle .material-icons {
       transform: rotate(180deg);
     }
-  </style>
 
+    /* Light mode */
+    #alert-container .alert {
+      background-color: #fff000; /* warning yellow */
+      color: #121212;
+      border: 1px solid #ffeeba;
+    }
+
+    /* Dark mode */
+    body.dark-mode #alert-container .alert {
+      background-color: #474300;
+      color: #f5f5f5;
+      border-color: #fff000;
+    }
+
+  </style>
 </head>
+
 <body>
 
   <!-- Navbar placeholder -->
@@ -222,17 +242,20 @@
     <div id="screen-thankyou" class="screen text-center">
       <p id="previewMessageIntro" class="fs-5 mb-2"></p>
       <p id="playful-message" class="text-muted fst-italic"></p>
-      <p id="please-wait" class="text-secondary"></p>
+<!--      <p id="please-wait" class="text-secondary"></p>-->
     </div>
 
     <!-- WhatsApp Preview Screen -->
     <div id="screen-whatsapp" class="screen">
-      <p class="text-muted text-center mb-3">This will be sent to WhatsApp:</p>
+      <p class="text-muted text-center mb-3">Message preview:</p>
+
       <pre id="preview-message" class="card-text mb-3"></pre>
       <button id="send-btn" class="btn btn-success w-100">
         <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
       </button>
       <button id="back-btn" class="btn btn-primary w-100 back-btn">⬅️ Back to Form</button>
+      <p class="text-muted text-center mt-3 mb-3">Please note: this sends the message to <em>your WhatsApp</em></p>
+      <p class="text-muted text-center mb-3">You still have to <strong>click send</strong> in <strong>your WhatsApp</strong></p>
     </div>
   </main>
 
@@ -291,6 +314,8 @@
       });
   </script>
 
+<!--      'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec', // main  -->
+
   <!-- Main Booking Logic -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -301,15 +326,11 @@
         "12:00 - 17:00","11:00 - 14:00","12:00 - 15:00"
       ];
 
-      // Webhook URLs array
-      
-<!--      'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec', // main  -->
       const WEBHOOK_URLS = [
         'https://script.google.com/macros/s/AKfycbzTGnWa8CM7bQaWX_yc5NDLGAe4twp3lKAwpei9OTjipqJp-hMYQT750gUSMiUT-6BvyQ/exec',
         'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec'
       ];
 
-      // Stagger fade-slide elements
       document.querySelectorAll(".fade-slide").forEach((el, idx) => {
         el.style.animationDelay = `${idx * 0.1}s`;
       });
@@ -389,10 +410,35 @@
       });
 
       submitBtn.addEventListener('click', () => {
-        if (!selectedDate) return showAlert("Please select a date 🐠");
-        if (!selectedTime) return showAlert("Please select a time 🐡");
+        const dateMessages = [
+  <!--        "Please select a date",-->
+          "Save the date...but you didn't give me one",
+          "Without a date what do I tell the people?",
+          "Everyday is a good day but just one will do for now",
+          "I can't plan the party without a date"
+        ];
+
+        const timeMessages = [
+  <!--        "Please select a time",-->
+          "I wanna know when you're coming in...I want you to tell me",
+          "Time is a construct that you haven't constructed yet",
+          "One does not simply enter without a timeslot",
+          "Time waits for no one...but I'll wait for your timeslot"
+        ];
+
+        const nameMessages = [
+  <!--        "Please enter your name",-->
+          "Who are you? Who, who, who, who?",
+          "No name, no entry!",
+          "A portal needs a name...yours",
+          "Who goes there? Speak, I mean type, please"
+        ];
+
+
+        if (!selectedDate) return showAlert(dateMessages[Math.floor(Math.random() * dateMessages.length)]);
+        if (!selectedTime) return showAlert(timeMessages[Math.floor(Math.random() * timeMessages.length)]);
         const name = volunteerName.value.trim();
-        if (!name) return showAlert("Please enter your name 🦀");
+        if (!name) return showAlert(nameMessages[Math.floor(Math.random() * nameMessages.length)]);
 
         const comment = commentField.value.trim().slice(0, 100);
         const formattedDate = formatDate(selectedDate);
@@ -407,31 +453,15 @@
           "🐟 Surgeonfish refining your message...",
           "🧜‍♀️ Mermaids proofreading your request...",
           "🐡 Pufferfish inflating your form...",
-          "🦀 Crabs double-checking everything...",
-          "🐙 Octopus counting arms...",
-          "🐬 Dolphins capturing your booking...",
-          "🐢 Turtle slowly processing...",
+          "🦀 Crabs double-checking life choices...",
+          "🐙 Octopus counting timeslots...",
+          "🐬 Dolphins are data capturing...",
+          "🐢 Turtles slowly processing...",
           "🧽 Sponges soaking up typos...",
-          "🦑 Squids rewriting in ink...",
-          "🐟 Parrotfish repeating your message...",
-          "📡 Sending request to system...",
-          "🧭 Verifying all info...",
-          "🛠️ Processing your submission...",
-          "📋 Reviewing your submission...",
-          "⏳ Finalizing your request...",
-          "🧾 Validating your selection...",
-          "📦 Packaging everything up...",
-          "🌊 Tide carrying your message...",
-          "🐚 Seashells echoing softly...",
-          "🌤️ Drifting through the breeze...",
-          "🐠 Gliding toward confirmation...",
-          "🕊️ Floating into our system...",
-          "🌙 Request floating on gentle waves...",
-          "🍃 Request moving with ease...",
-          "🐳 Calm waters are prevailing..."
+          "🦑 Squid rewriting in ink...",
+          "🐟 Parrotfish repeating your message..."
         ];
 
-        // Typewriter effect
         function typeWriter(element, text, speed = 50, callback) {
           let i = 0;
           element.textContent = '';
@@ -440,9 +470,7 @@
               element.textContent += text.charAt(i);
               i++;
               setTimeout(type, speed);
-            } else if (callback) {
-              callback();
-            }
+            } else if (callback) callback();
           }
           type();
         }
@@ -484,7 +512,6 @@
         const comment = commentField.value.trim().slice(0, 100);
         const formattedDate = formatDate(selectedDate);
 
-        // Build payload
         const payload = {
           token: 'just_to_stop_bots',
           name: name,
@@ -495,7 +522,6 @@
           screenResolution: `${window.screen.width}x${window.screen.height}`
         };
 
-        // Send to all webhook URLs
         WEBHOOK_URLS.forEach(url => {
           fetch(url, {
             method: 'POST',
@@ -507,16 +533,13 @@
           .catch(err => console.error(`❌ Error sending to ${url}:`, err));
         });
 
-        // Open WhatsApp
         const encodedMessage = encodeURIComponent(currentMessage);
         window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
 
-        // UI feedback
         switchScreen(screenWhatsApp, screenForm);
         sentOverlay.style.display = 'block';
         setTimeout(() => sentOverlay.style.display = 'none', 2000);
 
-        // Reset form
         volunteerName.value = '';
         datePicker.value = '';
         selectedDate = null;
@@ -529,8 +552,6 @@
       backBtn.addEventListener('click', () => switchScreen(screenWhatsApp, screenForm));
     });
   </script>
-
-
 
   <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
