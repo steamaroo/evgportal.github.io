@@ -1,6 +1,6 @@
 # EVG Portal
 
-## Vrsion 2.0.1
+## Version 2.0.1
 
 Access link : http://evgportal.github.io
 
