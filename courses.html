@@ -1,3 +1,6 @@
+<!-- V2.0.1 -->
+<!-- course preview fix -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,19 +13,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-
-<!--  the dark mode switch applied before css read, bit buggy-->
-<!--  <script>-->
-<!--    (function() {-->
-<!--      try {-->
-<!--        const savedMode = localStorage.getItem('darkMode');-->
-<!--        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;-->
-<!--        if (savedMode === 'dark' || (!savedMode && prefersDark)) {-->
-<!--          document.documentElement.classList.add('dark-mode');-->
-<!--        }-->
-<!--      } catch(e) {}-->
-<!--    })();-->
-<!--  </script>-->
 
   <style>
     :root {
@@ -49,7 +39,6 @@
     }
 
     .dark-mode .navbar { background-color: #1a1a1a !important; }
-<!--    .dark-mode .text-muted { color: #9ca3af !important; }-->
     .dark-mode .text-muted { color: #f5f5f5 !important; }
     .dark-mode .list-group-item { background-color: #2d2d2d; border-color: #444; color: #f5f5f5; }
     .dark-mode .event-selected { background-color: #00ff0033 !important; }
@@ -160,6 +149,7 @@
     .navbar-toggler:hover { transform: scale(1.05); }
   </style>
 </head>
+
 <body>
   <!-- Navbar placeholder -->
   <div id="navbar-placeholder"></div>
@@ -248,6 +238,7 @@
   // --- Course Booking Logic ---
   document.addEventListener("DOMContentLoaded", () => {
     let events = [], selectedIndexes = [], currentMessage = "";
+    let displayedEvents = []; // ✅ FIX: store filtered subset used in display
 
     const funMessages = [
       "🐟 Surgeonfish refining your selection...",
@@ -262,7 +253,7 @@
       "🐠 Parrotfish repeating your message..."
     ];
 
-<!--    Papa.parse("courses.csv", {-->
+    // --- no cache for now, consider versioning
     Papa.parse("courses.csv?nocache=" + new Date().getTime(), {
       header: true,
       download: true,
@@ -295,18 +286,13 @@
     }
     nameInput.addEventListener("input", updateNextButton);
 
-    <!-- 🔹🔹🔹 -->
-    <!-- 🔹🔹🔹 -->
-
+    // Webhook URLs
     // 'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec'  // official log
-    // 🔹 Webhook URLs array
     const WEBHOOK_URLS = [
-      'https://script.google.com/macros/s/AKfycbzTGnWa8CM7bQaWX_yc5NDLGAe4twp3lKAwpei9OTjipqJp-hMYQT750gUSMiUT-6BvyQ/exec', // backup
-      'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec' // duplicate run backup
-
+      'https://script.google.com/macros/s/AKfycbzTGnWa8CM7bQaWX_yc5NDLGAe4twp3lKAwpei9OTjipqJp-hMYQT750gUSMiUT-6BvyQ/exec',
+      'https://script.google.com/macros/s/AKfycbxh_r0FhRyMrSmiF_skQvCa3AeJlqujTuynTwoQIWcrhIPOK6hvOX-wG1w4NsdBMlxt/exec'
     ];
 
-    // 🔹 Send payload to all webhook URLs
     function sendToSheets(webhookData) {
       WEBHOOK_URLS.forEach(url => {
         fetch(url, {
@@ -342,8 +328,9 @@
       if (!currentMessage) return;
       const name = nameInput.value.trim();
 
+      // ✅ FIX: use displayedEvents instead of events
       selectedIndexes.forEach(i => {
-        const e = events[i];
+        const e = displayedEvents[i];
         const sheetPayload = {
           token: 'just_to_stop_bots',
           date: formatDate(e.Date),
@@ -353,8 +340,6 @@
           userAgent: navigator.userAgent || 'Unknown',
           screenResolution: `${window.screen.width}x${window.screen.height}`
         };
-
-        // 🔹 Send to all webhooks
         sendToSheets(sheetPayload);
       });
 
@@ -369,108 +354,96 @@
 
     document.getElementById("back-btn").addEventListener("click", () => switchScreen("screen-preview", "screen-select"));
 
-    <!-- 🔹🔹🔹 -->
-    <!-- 🔹🔹🔹 -->
-
     function displayEvents() {
       const list = document.getElementById("events-list");
       list.innerHTML = "";
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      events
-        .filter(e => {
-          const eventDate = new Date(e.Date);
-          return !isNaN(eventDate.getTime()) && eventDate >= today;
-        })
-        .forEach((e, idx) => {
-          const barClass = e.TypeDetail.toLowerCase().includes("guiding") ? "bar-guiding" : e.TypeDetail.toLowerCase().includes("course") ? "bar-course" : "bar-other";
-          const date = new Date(e.Date);
-          const weekday = !isNaN(date.getTime()) ? date.toLocaleDateString('en-US', { weekday: 'short' }) : "";
-          const dateFormatted = !isNaN(date.getTime()) ? `${String(date.getDate()).padStart(2,'0')}-${date.toLocaleString('default',{month:'short'})}` : e.Date;
+      selectedIndexes = []; // ✅ FIX: reset selections each refresh
 
-          const item = document.createElement("div");
-          item.className = `list-group-item ${barClass}`;
-          item.style.animationDelay = `${idx * 0.15}s`; // make delay longer
-          item.innerHTML = `
-            <div class="list-group-item-header">
-              <div>📘 ${e.TypeDetail || 'No detail'}</div>
-              <span class="checkmark material-icons">check_circle</span>
-            </div>
-            <div class="mb-1">📅 ${dateFormatted} | ${weekday} | 🕘 ${e.Time || 'N/A'}</div>
-            <div class="text-muted small">🏫 ${e.School}</div>
-            <button class="btn btn-sm btn-outline-primary details-btn">Click for details</button>
-            <div class="drawer small text-muted">
-              ${e.Grade ? `🎓 Grade: ${e.Grade}<br>` : ""}
-              ${e.Facilitator ? `👩‍🏫 Facilitator: ${e.Facilitator}<br>` : ""}
-              ${e["Number of Learners"] ? `🧑‍🎓 Learners: ${e["Number of Learners"]}<br>` : ""}
-              ${e["No. of Guides still needed"] ? `🤼 Guides needed: ${e["No. of Guides still needed"]}<br>` : ""}
-              ${e["Guides Booked"] ? `👍 Booked: ${e["Guides Booked"]}<br>` : ""}
-              ${e.Shadowing ? `👻 Shadowing: ${e.Shadowing}<br>` : ""}
-            </div>
-          `;
+      // ✅ FIX: store filtered events in displayedEvents
+      displayedEvents = events.filter(e => {
+        const eventDate = new Date(e.Date);
+        return !isNaN(eventDate.getTime()) && eventDate >= today;
+      });
 
-          item.addEventListener("click", ev => {
-            if (ev.target.classList.contains("details-btn")) return;
-            if (item.classList.contains("event-selected")) {
-              item.classList.remove("event-selected");
-              selectedIndexes = selectedIndexes.filter(i => i !== idx);
-            } else {
-              item.classList.add("event-selected");
-              selectedIndexes.push(idx);
-            }
-            document.getElementById("next-btn").disabled = !selectedIndexes.length;
-          });
+      displayedEvents.forEach((e, idx) => {
+        const barClass = e.TypeDetail.toLowerCase().includes("guiding") ? "bar-guiding" : e.TypeDetail.toLowerCase().includes("course") ? "bar-course" : "bar-other";
+        const date = new Date(e.Date);
+        const weekday = !isNaN(date.getTime()) ? date.toLocaleDateString('en-US', { weekday: 'short' }) : "";
+        const dateFormatted = !isNaN(date.getTime()) ? `${String(date.getDate()).padStart(2,'0')}-${date.toLocaleString('default',{month:'short'})}` : e.Date;
 
-          item.querySelector(".details-btn").addEventListener("click", ev => {
-            ev.stopPropagation();
-            const drawer = item.querySelector(".drawer");
-            if (drawer.classList.contains("open")) {
-              drawer.style.height = drawer.scrollHeight + "px";
-              requestAnimationFrame(() => {
-                drawer.style.height = "0px";
-                drawer.classList.remove("open");
-              });
-            } else {
-              drawer.classList.add("open");
-              drawer.style.height = drawer.scrollHeight + "px";
-              drawer.addEventListener("transitionend", () => {
-                drawer.style.height = "auto";
-              }, { once: true });
-            }
-          });
+        const item = document.createElement("div");
+        item.className = `list-group-item ${barClass}`;
+        item.style.animationDelay = `${idx * 0.15}s`;
+        item.innerHTML = `
+          <div class="list-group-item-header">
+            <div>📘 ${e.TypeDetail || 'No detail'}</div>
+            <span class="checkmark material-icons">check_circle</span>
+          </div>
+          <div class="mb-1">📅 ${dateFormatted} | ${weekday} | 🕘 ${e.Time || 'N/A'}</div>
+          <div class="text-muted small">🏫 ${e.School}</div>
+          <button class="btn btn-sm btn-outline-primary details-btn">Click for details</button>
+          <div class="drawer small text-muted">
+            ${e.Grade ? `🎓 Grade: ${e.Grade}<br>` : ""}
+            ${e.Facilitator ? `👩‍🏫 Facilitator: ${e.Facilitator}<br>` : ""}
+            ${e["Number of Learners"] ? `🧑‍🎓 Learners: ${e["Number of Learners"]}<br>` : ""}
+            ${e["No. of Guides still needed"] ? `🤼 Guides needed: ${e["No. of Guides still needed"]}<br>` : ""}
+            ${e["Guides Booked"] ? `👍 Booked: ${e["Guides Booked"]}<br>` : ""}
+            ${e.Shadowing ? `👻 Shadowing: ${e.Shadowing}<br>` : ""}
+          </div>
+        `;
 
-          list.appendChild(item);
+        item.addEventListener("click", ev => {
+          if (ev.target.classList.contains("details-btn")) return;
+          if (item.classList.contains("event-selected")) {
+            item.classList.remove("event-selected");
+            selectedIndexes = selectedIndexes.filter(i => i !== idx);
+          } else {
+            item.classList.add("event-selected");
+            selectedIndexes.push(idx);
+          }
+          document.getElementById("next-btn").disabled = !selectedIndexes.length;
         });
 
-      // ✅ staged reveal
+        item.querySelector(".details-btn").addEventListener("click", ev => {
+          ev.stopPropagation();
+          const drawer = item.querySelector(".drawer");
+          if (drawer.classList.contains("open")) {
+            drawer.style.height = drawer.scrollHeight + "px";
+            requestAnimationFrame(() => {
+              drawer.style.height = "0px";
+              drawer.classList.remove("open");
+            });
+          } else {
+            drawer.classList.add("open");
+            drawer.style.height = drawer.scrollHeight + "px";
+            drawer.addEventListener("transitionend", () => {
+              drawer.style.height = "auto";
+            }, { once: true });
+          }
+        });
+
+        list.appendChild(item);
+      });
+
       const nameField = document.getElementById("name-field");
       const nextWrapper = document.getElementById("next-btn-wrapper");
 
-      // step 1: show name field with fade
       nameField.style.display = "block";
-      requestAnimationFrame(() => {
-        nameField.classList.add("fade-slide");
-      });
-
-      // step 2: after a small delay, show the Next button with fade
+      requestAnimationFrame(() => nameField.classList.add("fade-slide"));
       setTimeout(() => {
         nextWrapper.style.display = "block";
-        requestAnimationFrame(() => {
-          nextWrapper.classList.add("fade-slide");
-        });
-      }, 300); // delay in ms
-
-
+        requestAnimationFrame(() => nextWrapper.classList.add("fade-slide"));
+      }, 300);
     }
-
-    <!-- 🔹🔹🔹 -->
-    <!-- 🔹🔹🔹 -->
 
     function buildWhatsAppMessage(name) {
       let msg = `📚 *Course & Guidings Request - ${name}*\n\n👤 Name: ${name}\n\n`;
+      // ✅ FIX: use displayedEvents here
       selectedIndexes.forEach(i => {
-        const e = events[i];
+        const e = displayedEvents[i];
         msg += `📅 ${formatDate(e.Date)}\n🕘 ${e.Time || "N/A"}\n🏫 ${e.School}\n📘 ${e.TypeDetail}\n\n---\n\n`;
       });
       return msg.trim();
@@ -494,6 +467,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>
