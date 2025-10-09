@@ -440,7 +440,7 @@
         const name = volunteerName.value.trim();
         if (!name) return showAlert(nameMessages[Math.floor(Math.random() * nameMessages.length)]);
 
-        const comment = commentField.value.trim().slice(0, 100);
+        const comment = commentField.value.trim().slice(0, 300);
         const formattedDate = formatDate(selectedDate);
 
         previewMessageIntro.innerHTML = `
