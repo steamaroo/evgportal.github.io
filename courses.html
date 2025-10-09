@@ -1,3 +1,5 @@
+<!-- V2.0.5 -->
+<!-- added scroll to top on error alert -->
 <!-- V2.0.1 -->
 <!-- course preview fix -->
 
@@ -272,6 +274,11 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       `;
+
+      // Scroll the page to the top so the alert is visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Drop after 5 seconds
       setTimeout(() => { const alert = alertContainer.querySelector(".alert"); if(alert) alert.remove(); }, 5000);
     }
 
@@ -308,7 +315,7 @@
 
     document.getElementById("next-btn").addEventListener("click", () => {
       if (!selectedIndexes.length || !nameInput.value.trim()) {
-        showAlert("Please select at least one course and enter your name.");
+        showAlert("Please enter your name.");
         return;
       }
 
